@@ -12,6 +12,8 @@ services:
             - php
 
     php:
+        image: php:7.4.9-fpm-bullseye  # 追記
+        platform: linux/arm64/v8  # 追記
         build: ./docker/php
         volumes:
             - ./src:/var/www/
