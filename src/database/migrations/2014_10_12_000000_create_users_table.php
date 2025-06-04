@@ -17,9 +17,10 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->timestamp('email_verified_at')->nullable(); // メール認証のタイムスタンプ、メール認証用
+            $table->string('password'); // ハッシュ化されたパスワード
+            $table->enum('role', ['user', 'admin'])->default('user'); // 役割(管理者/一般ユーザー)を判定するカラム
+            $table->rememberToken(); // ログイン状態保持用
             $table->timestamps();
         });
     }

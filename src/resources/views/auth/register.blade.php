@@ -1,59 +1,62 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+@extends('layouts.app')
 
-        <!-- Validation Errors -->
-        <x-auth-validation-errors class="mb-4" :errors="$errors" />
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/register.css') }}?v={{ time() }}">
+@endsection
 
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+@section('title', '会員登録画面')
 
-            <!-- Name -->
-            <div>
-                <x-label for="name" :value="__('Name')" />
+@section('content')
+    <div class="register-form__content">
+        <div class="register-form__heading">
+            <h2>会員登録</h2>
+        </div>
 
-                <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form class="register-form" action="{{ route('register') }}">
+        @csrf
+            <div class="register-form__group">
+                <label for="name">名前</label>
+                <input type="text" id="name" name="name" class="form-control"  value="{{ old('name') }}">
+                @error('name')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
-            <!-- Email Address -->
-            <div class="mt-4">
-                <x-label for="email" :value="__('Email')" />
-
-                <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
+            <div class="register-form__group">
+                <label for="email">メールアドレス</label>
+                <input type="email" id="email" name="email" class="form-control" value="{{ old('email') }}">
+                @error('email')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
-            <!-- Password -->
-            <div class="mt-4">
-                <x-label for="password" :value="__('Password')" />
-
-                <x-input id="password" class="block mt-1 w-full"
-                                type="password"
-                                name="password"
-                                required autocomplete="new-password" />
+            <div class="register-form__group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" class="form-control" value="{{ old('password') }}">
+                @error('password')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
-            <!-- Confirm Password -->
-            <div class="mt-4">
-                <x-label for="password_confirmation" :value="__('Confirm Password')" />
-
-                <x-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required />
+            <div class="register-form__group">
+                <label for="password_confirmation">パスワード確認</label>
+                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" value="{{ old('password_confirmation') }}">
+                @error('password_confirmation')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
-                    {{ __('Already registered?') }}
-                </a>
-
-                <x-button class="ml-4">
-                    {{ __('Register') }}
-                </x-button>
+            <div class="register-form__group">
+                <button type="submit" class="form-control">登録する</button>
+                <a href="{{ route('login') }}">ログインはこちら</a>
             </div>
+
         </form>
-    </x-auth-card>
-</x-guest-layout>
+    </div>
+@endsection

@@ -1,39 +1,28 @@
-<x-guest-layout>
-    <x-auth-card>
-        <x-slot name="logo">
-            <a href="/">
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-            </a>
-        </x-slot>
+@extends('layouts.app')
 
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
-        </div>
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/verify-email.css') }}?v={{ time() }}">
+@endsection
 
-        @if (session('status') == 'verification-link-sent')
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-            </div>
-        @endif
+@section('title', 'メール認証誘導画面')
 
-        <div class="mt-4 flex items-center justify-between">
-            <form method="POST" action="{{ route('verification.send') }}">
-                @csrf
+@section('content')
+<div class="verify-container">
+    <p class="verify-message">
+        登録していただいたメールアドレスに認証メールを送付しました。<br>
+        メール認証を完了してください。
+    </p>
 
-                <div>
-                    <x-button>
-                        {{ __('Resend Verification Email') }}
-                    </x-button>
-                </div>
-            </form>
+    <div class="verify-button">
+        <a href="/mypage/profile/edit" class="btn">認証はこちらから</a>
+    </div>
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
+    <div class="resend-link">
+        <form method="POST" action="{{ route('verification.send') }}">
+            @csrf
+            <button type="submit" class="resend-btn">認証メールを再送する</button>
+        </form>
+    </div>
+</div>
+@endsection
 
-                <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900">
-                    {{ __('Log Out') }}
-                </button>
-            </form>
-        </div>
-    </x-auth-card>
-</x-guest-layout>
