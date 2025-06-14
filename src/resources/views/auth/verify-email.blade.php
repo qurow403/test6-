@@ -14,7 +14,7 @@
     </p>
 
     <div class="verify-button">
-        <a href="/mypage/profile/edit" class="btn">認証はこちらから</a>
+        <a href="/" class="btn">認証はこちらから</a>
     </div>
 
     <div class="resend-link">

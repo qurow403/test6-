@@ -19,10 +19,10 @@ class CreateAttendancesTable extends Migration
             $table->date('date'); // 勤務日
             $table->timestamp('clock_in')->nullable();  // 出勤時間
             $table->timestamp('clock_out')->nullable(); // 退勤時間
-            $table->enum('status', ['off_duty', 'working', 'on_break', 'left'])->default('off_duty');
+            $table->enum('status', ['off_duty', 'working', 'on_break', 'finished'])->default('off_duty');
             $table->integer('worked_minutes')->nullable(); // 実働時間（分）
             $table->timestamps();
-            //　statusカラム　→  off_duty(勤務外),working(出勤中),on_break(休憩中),left(退勤済)
+            // statusカラム →  off_duty(勤務外),working(出勤中),on_break(休憩中),finished(退勤済)
         });
     }
 

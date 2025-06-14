@@ -19,10 +19,16 @@ class Attendance extends Model
     ];
 
     /**
-     * ユーザーとのリレーション（多対1）
+     * userとのリレーション（多対1）
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // breaksとのリレーション（1対多）
+    public function breaks()
+    {
+        return $this->hasMany(BreakTime::class);
     }
 }

@@ -18,7 +18,7 @@
             </div>
         @endif
 
-        <form class="register-form" action="{{ route('register') }}">
+        <form class="register-form" method="POST" action="{{ route('register') }}">
         @csrf
             <div class="register-form__group">
                 <label for="name">名前</label>

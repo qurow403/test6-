@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Auth\EmailVerificationRequest; // メール認証機能
 use Illuminate\Support\Facades\Route;
 
+// AttendanceController追加
+use App\Http\Controllers\AttendanceController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,28 +18,29 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/dashboard');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-Route::post('/email/verification-notification', function () {
-    request()->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
 // 本番では外す、一時的な設定
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-});
+}); // メール認証
+Route::get('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'create'])->name('attendance.create'); // 勤怠登録
 
 require __DIR__.'/auth.php';
 // ログインできていないとhttp://localhost/loginに強制的にバックする
 
+
+// 勤怠一覧画面
+Route::get('/attendance/list', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
+// 勤怠詳細画面
+Route::get('/attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('attendance.show');
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clock_in');
+    Route::post('/attendance/break-start', [AttendanceController::class, 'breakStart'])->name('attendance.break_start');
+    Route::post('/attendance/break-end', [AttendanceController::class, 'breakEnd'])->name('attendance.break_end');
+    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clock_out');
+    // Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+});
 
 
 // 管理者ログイン前
