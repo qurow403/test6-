@@ -4,7 +4,10 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest; // メール認証機�
 use Illuminate\Support\Facades\Route;
 
 // AttendanceController追加
-use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\Admin\AttendanceController;
+
+// RequestController(申請一覧画面)追加
+use App\Http\Controllers\RequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +32,15 @@ require __DIR__.'/auth.php';
 
 
 // 勤怠一覧画面
-Route::get('/attendance/list', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index');
+Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
 // 勤怠詳細画面
-Route::get('/attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('attendance.show');
+Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
+Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+// 勤怠詳細画面＿承認待ち
+Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])->name('attendance.pending');
+
+// 申請一覧画面
+Route::get('/stamp_correction_request/list', [RequestController::class, 'index'])->name('requests.index');
 
 
 Route::middleware('auth')->group(function () {

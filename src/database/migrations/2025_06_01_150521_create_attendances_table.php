@@ -19,6 +19,8 @@ class CreateAttendancesTable extends Migration
             $table->date('date'); // 勤務日
             $table->timestamp('clock_in')->nullable();  // 出勤時間
             $table->timestamp('clock_out')->nullable(); // 退勤時間
+            $table->timestamp('break1')->nullable();    // 休憩開始時間
+            $table->timestamp('break2')->nullable();    // 休憩終了時間
             $table->enum('status', ['off_duty', 'working', 'on_break', 'finished'])->default('off_duty');
             $table->integer('worked_minutes')->nullable(); // 実働時間（分）
             $table->timestamps();
