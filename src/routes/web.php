@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Auth\EmailVerificationRequest; // メール認証機能
 use Illuminate\Support\Facades\Route;
 
-// AttendanceController追加
+// AttendanceController(勤怠画面 登録・一覧・詳細・詳細＿承認待ち)追加
 use App\Http\Controllers\Admin\AttendanceController;
 
 // RequestController(申請一覧画面)追加
@@ -20,17 +20,18 @@ use App\Http\Controllers\RequestController;
 |
 */
 
-
+// メール認証画面
 // 本番では外す、一時的な設定
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-}); // メール認証
-Route::get('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'create'])->name('attendance.create'); // 勤怠登録
+});
 
 require __DIR__.'/auth.php';
 // ログインできていないとhttp://localhost/loginに強制的にバックする
 
 
+// 勤怠登録画面
+Route::get('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'create'])->name('attendance.create');
 // 勤怠一覧画面
 Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
 // 勤怠詳細画面

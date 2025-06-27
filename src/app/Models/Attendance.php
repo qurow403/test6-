@@ -20,9 +20,7 @@ class Attendance extends Model
         'worked_minutes',
     ];
 
-    /**
-     * userとのリレーション（多対1）
-     */
+    // userとのリレーション（多対1）
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -32,5 +30,11 @@ class Attendance extends Model
     public function breaks()
     {
         return $this->hasMany(BreakTime::class);
+    }
+
+    // ApprovalRequestsとのリレーション（1対多）
+    public function ApprovalRequests()
+    {
+        return $this->hasMany(ApprovalRequest::class);
     }
 }

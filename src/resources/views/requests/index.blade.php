@@ -14,11 +14,11 @@
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
-               href="{{ route('admin.requests.index', ['status' => 'pending']) }}">承認待ち</a>
+                href="{{ route('requests.index', ['status' => 'pending']) }}">承認待ち</a>
         </li>
         <li class="nav-item">
             <a class="nav-link {{ request('status') === 'approved' ? 'active' : '' }}"
-               href="{{ route('admin.requests.index', ['status' => 'approved']) }}">承認済み</a>
+                href="{{ route('requests.index', ['status' => 'approved']) }}">承認済み</a>
         </li>
     </ul>
 
@@ -42,7 +42,7 @@
                     <td>{{ $request->note }}</td>
                     <td>{{ \Carbon\Carbon::parse($request->created_at)->format('Y/m/d') }}</td>
                     <td>
-                        <a href="{{ route('admin.requests.show', ['id' => $request->id]) }}">詳細</a>
+                        <a href="{{ route('attendance.pending', ['id' => $request->id]) }}">詳細</a>
                     </td>
                 </tr>
             @empty
