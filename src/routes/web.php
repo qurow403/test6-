@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\AttendanceController;
 // RequestController(申請一覧画面)追加
 use App\Http\Controllers\RequestController;
 
+// LoginController(管理者ログイン画面)追加
+use App\Http\Controllers\Admin\Auth\LoginController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -53,13 +56,14 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// 管理者ログイン前
-Route::get('admin/login', [Admin\Auth\LoginController::class, 'showLoginForm'])->name('admin.login');
-Route::post('admin/login', [Admin\Auth\LoginController::class, 'login']);
+// ログイン画面(管理者)
+Route::get('admin/login', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'showLoginForm'])->name('admin.auth.login');
+Route::post('admin/login', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'login']);
+Route::post('admin/logout', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'logout'])->name('admin.auth.logout');
 
 // 管理者ログイン後（要ミドルウェア）
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('attendances', [Admin\AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('attendance', [Admin\AttendanceController::class, 'index'])->name('attendances.index');
     Route::get('staffs', [Admin\StaffController::class, 'index'])->name('staffs.index');
     Route::get('stamp-correction-requests', [Admin\RequestController::class, 'index'])->name('stamp_correction_requests.index');
     Route::post('logout', [Admin\Auth\LoginController::class, 'logout'])->name('logout');
