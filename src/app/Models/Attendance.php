@@ -37,4 +37,5 @@ class Attendance extends Model
     {
         return $this->hasMany(ApprovalRequest::class);
     }
+
 }

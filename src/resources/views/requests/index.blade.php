@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
 @endsection
 
-@section('title', '申請一覧画面')
+@section('title', '申請一覧画面(一般ユーザー)')
 
 @section('content')
 <div class="container">

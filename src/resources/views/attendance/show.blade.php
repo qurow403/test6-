@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('css/show.css') }}?v={{ time() }}">
 @endsection
 
-@section('title', '勤怠詳細画面')
+@section('title', '勤怠詳細画面(一般ユーザー)')
 
 @section('content')
 <div class="container">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '勤怠詳細画面_承認待ち')
+@section('title', '勤怠詳細画面_承認待ち(一般ユーザー)')
 
 @section('content')
 <div class="container">

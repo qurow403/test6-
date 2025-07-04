@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/attendance.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
 @endsection
 
-@section('title', '勤怠一覧画面')
+@section('title', '勤怠一覧画面(一般ユーザー)')
 
 @section('content')
 <div class="container">
@@ -36,8 +36,11 @@
                     <td class="border px-4 py-2">{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : 'ー' }}</td>
                     <td class="border px-4 py-2">{{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : 'ー' }}</td>
                     <td class="border px-4 py-2">
-                    @if (isset($attendance->break_duration))
-                    {{ floor($attendance->break_duration / 60) }}:{{ str_pad($attendance->break_duration % 60, 2, '0', STR_PAD_LEFT) }}
+                    @if (isset($attendance->break1) && isset($attendance->break2))
+                        @php
+                            $duration = \Carbon\Carbon::parse($attendance->break1)->diffInMinutes(\Carbon\Carbon::parse($attendance->break2));
+                        @endphp
+                        {{ floor($duration / 60) }}:{{ str_pad($duration % 60, 2, '0', STR_PAD_LEFT) }}
                     @else
                         ー
                     @endif

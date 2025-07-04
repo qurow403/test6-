@@ -1,3 +1,12 @@
+@extends('layouts.app')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/create.css') }}?v={{ time() }}">
+@endsection
+
+@section('title', '勤怠登録画面(一般ユーザー)')
+
+@section('content')
 <div>
     <!-- {{-- 日付表示 --}} -->
     @php
@@ -9,14 +18,14 @@
 
     <!-- {{-- 勤務ステータス表示 --}} -->
     <p>現在のステータス:
-        @switch($attendance->status ?? 'before')
-            @case('before')
+        @switch($attendance->status ?? 'off_duty')
+            @case('off_duty')
                 出勤前（勤務外）
                 @break
             @case('working')
                 出勤中（勤務中）
                 @break
-            @case('break')
+            @case('on_break')
                 休憩中（勤務中）
                 @break
             @case('finished')
@@ -36,7 +45,7 @@
             </form>
 
         @elseif($attendance->status === 'working')
-            <form method="POST" action="{{ route('breaks.start', $attendance->id) }}">
+            <form method="POST" action="{{ route('attendance.break_start', $attendance->id) }}">
                 @csrf
                 <button type="submit">休憩</button>
             </form>
@@ -46,7 +55,7 @@
             </form>
 
         @elseif($attendance->status === 'on_break')
-            <form method="POST" action="{{ route('breaks.end', $attendance->id) }}">
+            <form method="POST" action="{{ route('attendance.break_end', $attendance->id) }}">
                 @csrf
                 <button type="submit">休憩終了</button>
             </form>
@@ -57,3 +66,4 @@
         @endif
     </div>
 </div>
+@endsection

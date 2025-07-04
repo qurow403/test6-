@@ -4,7 +4,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest; // メール認証機�
 use Illuminate\Support\Facades\Route;
 
 // AttendanceController(勤怠画面 登録・一覧・詳細・詳細＿承認待ち)追加
-use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\AttendanceController;
 
 // RequestController(申請一覧画面)追加
 use App\Http\Controllers\RequestController;
@@ -33,17 +33,17 @@ require __DIR__.'/auth.php';
 // ログインできていないとhttp://localhost/loginに強制的にバックする
 
 
-// 勤怠登録画面
-Route::get('/attendance', [App\Http\Controllers\Admin\AttendanceController::class, 'create'])->name('attendance.create');
-// 勤怠一覧画面
+// 勤怠登録画面(一般ユーザー)
+Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
+// 勤怠一覧画面(一般ユーザー)
 Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-// 勤怠詳細画面
+// 勤怠詳細画面(一般ユーザー)
 Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
 Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
-// 勤怠詳細画面＿承認待ち
+// 勤怠詳細画面＿承認待ち(一般ユーザー)
 Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])->name('attendance.pending');
 
-// 申請一覧画面
+// 申請一覧画面(一般ユーザー)
 Route::get('/stamp_correction_request/list', [RequestController::class, 'index'])->name('requests.index');
 
 
@@ -62,9 +62,23 @@ Route::post('admin/login', [\App\Http\Controllers\Admin\Auth\LoginController::cl
 Route::post('admin/logout', [\App\Http\Controllers\Admin\Auth\LoginController::class, 'logout'])->name('admin.auth.logout');
 
 // 管理者ログイン後（要ミドルウェア）
-Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('attendance', [Admin\AttendanceController::class, 'index'])->name('attendances.index');
-    Route::get('staffs', [Admin\StaffController::class, 'index'])->name('staffs.index');
+// あとで解除する
+// Route:: middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('attendance/list', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('attendance.index'); // 勤怠一覧画面（管理者）
     Route::get('stamp-correction-requests', [Admin\RequestController::class, 'index'])->name('stamp_correction_requests.index');
     Route::post('logout', [Admin\Auth\LoginController::class, 'logout'])->name('logout');
 });
+
+// 勤怠一覧画面（管理者）
+Route::get('admin/attendance/list', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('admin.attendance.index');
+// 勤怠詳細画面（管理者）
+Route::get('attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('admin.attendance.show');
+Route::put('attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'update'])->name('admin.attendance.update');
+//  スタッフ別勤怠一覧画面（管理者）
+Route::get('admin/attendance/staff/{id}', [App\Http\Controllers\Admin\StaffAttendanceController::class, 'index'])->name('admin.staff_attendance.index');
+// スタッフ別勤怠一覧画面（管理者）CSV出力
+Route::get('admin/staff/attendance/{id}/csv', [App\Http\Controllers\Admin\StaffAttendanceController::class, 'exportCsv'])->name('admin.staff_attendance.csv');
+//  スタッフ一覧画面（管理者）
+Route::get('admin/attendance/staff/list', [App\Http\Controllers\Admin\StaffAttendanceController::class, 'index'])->name('admin.staff_attendance.index');
