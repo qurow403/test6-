@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+// 管理者ログインセッションに guard('admin') を使うために追加
+use Illuminate\Support\Facades\Auth;
+
 class LoginController extends Controller
 {
     // ログイン画面(管理者)
@@ -15,19 +18,29 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        // $credentials = $request->validate([
+        //     'email' => ['required', 'email'],
+        //     'password' => ['required'],
+        // ]);
 
-        if (auth()->guard('admin')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('admin.attendance.index')); // 管理者TOPなどに
+        // if (auth()->guard('admin')->attempt($credentials)) {
+        //     $request->session()->regenerate();
+        //     return redirect()->intended(route('admin.attendance.index')); // 管理者TOPなどに
+        // }
+
+        // return back()->withErrors([
+        //     'email' => 'メールアドレスまたはパスワードが正しくありません。',
+        // ])->onlyInput('email');
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::guard('admin')->attempt($credentials)) {
+            return redirect()->route('admin.stamp_correction_request.index');
         }
 
         return back()->withErrors([
-            'email' => 'メールアドレスまたはパスワードが正しくありません。',
-        ])->onlyInput('email');
+            'email' => 'ログイン情報が正しくありません。',
+        ]);
     }
 
     public function logout(Request $request)

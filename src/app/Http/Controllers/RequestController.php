@@ -12,6 +12,7 @@ use App\Models\ApprovalRequest;
 
 class RequestController extends Controller
 {
+    // 申請一覧画面（一般ユーザー）
     public function index(Request $request)
     {
         $status = $request->query('status', 'pending'); // デフォルト: pending
