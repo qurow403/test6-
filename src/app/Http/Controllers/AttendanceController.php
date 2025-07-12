@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 // コントローラーを使えるようにするため追加
 use App\Http\Controllers\Controller;
 
+// 勤怠詳細画面(一般ユーザー)でのバリデーション実装のために追加
+use App\Http\Requests\Attendance\UpdateAttendanceRequest;
+
+
 // Attendanceモデル・時間追加
 use App\Models\Attendance;
 use Carbon\Carbon;
@@ -74,60 +78,44 @@ class AttendanceController extends Controller
     // 勤怠詳細画面(一般ユーザー)
     public function show($id)
     {
-        // $attendance = Attendance::findOrFail($id);
-        // return view('attendance.show', compact('attendance'));
-
-        // 仮のオブジェクトを用意
         $attendance = (object)[
             'id' => $id,
-            'user_id' => 1,
-            'date' => '2025-06-11',
-            'clock_in' => '2025-06-11 09:00:00',
-            'clock_out' => '2025-06-11 18:00:00',
-            'status' => 'working',
-            'worked_minutes' => 480,
-            'break1' => '2025-06-11 12:00:00',
-            'break2' => '2025-06-11 15:00:00',
-            'note' => 'これは仮の備考です',
-
-            // 👇 ここを追加
-            'user' => (object)[
-                'name' => 'テストユーザー'
-            ],
-
-            // 👇 break を複数配列で持たせる（show.blade.php対応用）
+            'user_name' => '西 伶奈',
+            'date' => '2023-06-01',
+            'clock_in' => '09:00',
+            'clock_out' => '18:00',
+            'note' => '電車遅延のため',
             'breaks' => [
-                ['start' => '2025-06-11 12:00:00', 'end' => '2025-06-11 12:30:00'],
-                ['start' => '2025-06-11 15:00:00', 'end' => '2025-06-11 15:15:00']
+                ['start' => '12:00', 'end' => '13:00'],
+                ['start' => '', 'end' => ''],
             ]
         ];
 
         return view('attendance.show', compact('attendance'));
     }
 
-    // 勤怠詳細画面で修正申請するメソッド
-    public function update(Request $request, $id)
+    // 勤怠詳細画面(一般ユーザー)で修正申請するメソッド
+    public function update(UpdateAttendanceRequest $request, $id)
     {
-        // 仮のバリデーションルール
-        $validated = $request->validate([
-            'clock_in' => 'nullable|date_format:H:i',
-            'clock_out' => 'nullable|date_format:H:i|after_or_equal:clock_in',
-            'breaks.*.start' => 'nullable|date_format:H:i',
-            'breaks.*.end' => 'nullable|date_format:H:i|after_or_equal:breaks.*.start',
-            'note' => 'required|string|max:500',
-        ]);
+        // バリデーションルール
+        $validated = $request->validated();
 
-        logger()->info("勤怠修正内容（ID: $id）", $validated);
+        // 通常はDB更新処理、今回は省略
+        logger()->info("修正申請内容", $validated);
 
-        return redirect()->route('attendance.pending', ['id' => $id])
-                        ->with('success', '修正申請を送信しました（承認待ち）')
-                        ->with('submitted', $validated);
+        return redirect()->route('attendance.pending', $id)
+            ->with('success', '修正申請を送信しました（承認待ち）')
+            ->with('submitted', $validated);
     }
 
     // 勤怠詳細画面＿承認待ち(一般ユーザー)
     public function pending($id)
     {
         $submitted = session('submitted'); // セッションから取得
+
+        // if (!$submitted) {
+        //     return redirect()->route('attendance.index')->with('error', '表示できるデータがありません');
+        // }
 
         // clock_in / clock_out を H:i 形式に整形（nullチェック付き）
         $clockIn = isset($submitted['clock_in']) && $submitted['clock_in']

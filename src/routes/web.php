@@ -49,11 +49,37 @@ require __DIR__.'/auth.php';
 Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
 // 勤怠一覧画面(一般ユーザー)
 Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-// 勤怠詳細画面(一般ユーザー)
-Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
-Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
 // 勤怠詳細画面＿承認待ち(一般ユーザー)
 Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])->name('attendance.pending');
+
+
+// 勤怠詳細一覧画面(一般ユーザー・管理者)
+// Route::get('/attendance/{id}', function (Request $request, $id) {
+//     if (Auth::guard('admin')->check()) {
+//         // 管理者ログイン中なら管理者コントローラーに処理を委譲
+//         return app(\App\Http\Controllers\Admin\AttendanceController::class)->show($id);
+//     } elseif (Auth::check()) {
+//         // 一般ユーザーログイン中なら一般ユーザーコントローラー
+//         return app(\App\Http\Controllers\AttendanceController::class)->show($id);
+//     } else {
+//         // ログインしていない場合はログイン画面へ
+//         return redirect()->route('login');
+//     }
+// })->name('attendance.show');
+Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'show'])->name('attendance.show');
+
+// 勤怠詳細一覧画面(一般ユーザー・管理者)  更新ルート（PUT）
+// Route::put('/attendance/{id}', function (Request $request, $id) {
+//     if (Auth::guard('admin')->check()) {
+//         return app(\App\Http\Controllers\Admin\AttendanceController::class)->update($request, $id);
+//     } elseif (Auth::check()) {
+//         return app(\App\Http\Controllers\AttendanceController::class)->update($request, $id);
+//     } else {
+//         return redirect()->route('login');
+//     }
+// })->name('attendance.update');
+Route::put('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('attendance.update');
+
 
 // 申請一覧画面(一般ユーザー・管理者)
 Route::get('/stamp_correction_request/list', function (Request $request) {
@@ -97,9 +123,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // 勤怠一覧画面（管理者）
 Route::get('admin/attendance/list', [App\Http\Controllers\Admin\AttendanceController::class, 'index'])->name('admin.attendance.index');
-// 勤怠詳細画面（管理者）
-Route::get('attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('admin.attendance.show');
-Route::put('attendance/{id}', [App\Http\Controllers\Admin\AttendanceController::class, 'update'])->name('admin.attendance.update');
 //  スタッフ一覧画面（管理者）
 Route::get('admin/staff/list', [App\Http\Controllers\Admin\StaffController::class, 'index'])->name('admin.staff.index');
 //  スタッフ別勤怠一覧画面（管理者）
