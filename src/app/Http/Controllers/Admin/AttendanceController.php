@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+// フォームリクエスト実装(AdminUpdateAttendanceRequest.php)
+use App\Http\Requests\Admin\Attendance\AdminUpdateAttendanceRequest;
+
 // 勤怠情報取得機能・勤怠詳細表示機能
 use App\Models\Attendance;
 
@@ -16,45 +19,12 @@ class AttendanceController extends Controller
     // // 勤怠一覧画面(管理者)
     public function index(Request $request)
     {
-    //     // 指定された日付、もしくは今日
-    //     $date = $request->input('date')
-    //         ? Carbon::parse($request->input('date'))
-    //         : Carbon::today();
+        // 本番実装で解除
+        // $date = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
 
-    //     // 勤怠情報を日付単位で取得（リレーションでユーザー情報も取得）
-    //     $attendances = Attendance::with(['user', 'breaks'])
-    //         ->whereDate('date', $date->toDateString())
-    //         ->get();
-
-    //     // 各勤怠に対して動的な項目を追加
-    //     foreach ($attendances as $attendance) {
-    //         // 出退勤がある場合のみ処理
-    //         if ($attendance->clock_in && $attendance->clock_out) {
-    //             $clockIn = Carbon::parse($attendance->clock_in);
-    //             $clockOut = Carbon::parse($attendance->clock_out);
-
-    //             // 総勤務時間（秒）
-    //             $totalSeconds = $clockOut->diffInSeconds($clockIn);
-
-    //             // 休憩時間（秒）を breaks から計算
-    //             $breakSeconds = $attendance->breaks->reduce(function ($carry, $break) {
-    //                 if ($break->break_start && $break->break_end) {
-    //                     return $carry + Carbon::parse($break->break_end)->diffInSeconds(Carbon::parse($break->break_start));
-    //                 }
-    //                 return $carry;
-    //             }, 0);
-
-    //             // 実働時間（総勤務 - 休憩）
-    //             $workedSeconds = max(0, $totalSeconds - $breakSeconds);
-
-    //             // 動的プロパティにフォーマット付きで代入
-    //             $attendance->break_duration = gmdate('H:i', $breakSeconds);
-    //             $attendance->worked_duration = gmdate('H:i', $workedSeconds);
-    //         } else {
-    //             $attendance->break_duration = '0:00';
-    //             $attendance->worked_duration = '0:00';
-    //         }
-    //     }
+        // $attendances = Attendance::with(['user', 'breaks'])
+        //     ->whereDate('date', $date->toDateString())
+        //     ->get();
 
         $date = $request->input('date')
             ? Carbon::parse($request->input('date'))
@@ -89,6 +59,9 @@ class AttendanceController extends Controller
     // 勤怠詳細画面(管理者)
     public function show($id)
     {
+        // 本番実装で解除
+        // $attendance = Attendance::with(['user', 'breaks'])->findOrFail($id);
+
         // ダミーの日付と時刻
         $date = \Carbon\Carbon::create(2023, 6, 1);
         $clockIn = $date->copy()->setTime(9, 0);
@@ -122,9 +95,41 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面(管理者)での編集メソッド
-    public function update(Request $request, $id)
+    public function update(AdminUpdateAttendanceRequest $request, $id)
     {
-        // 仮のリダイレクト処理
-        return redirect()->route('admin.attendance.show', $id)->with('success', '更新処理は未実装です');
+        // $attendance = Attendance::with('breaks')->findOrFail($id);
+
+        // $attendance->clock_in = $request->input('clock_in');
+        // $attendance->clock_out = $request->input('clock_out');
+        // $attendance->note = $request->input('note');
+        // $attendance->save();
+
+        // // 既存の休憩時間を削除・再登録でも可
+        // $attendance->breaks()->delete();
+        // foreach ($request->input('breaks', []) as $break) {
+        //     if (!empty($break['start']) || !empty($break['end'])) {
+        //         $attendance->breaks()->create([
+        //             'break_start' => $break['start'],
+        //             'break_end' => $break['end'],
+        //         ]);
+        //     }
+        // }
+
+        // 入力内容をセッションに保存
+        session()->put("attendance_update.{$id}", [
+            'id' => $id,
+            'name' => '西 伶奈', // 本来なら $attendance->user->name
+            'date' => '2023年6月1日', // 本来なら $attendance->date->formatなど
+            'start_time' => $request->input('clock_in'),
+            'end_time' => $request->input('clock_out'),
+            'break1_start' => $request->input('breaks')[0]['start'] ?? null,
+            'break1_end' => $request->input('breaks')[0]['end'] ?? null,
+            'break2_start' => $request->input('breaks')[1]['start'] ?? null,
+            'break2_end' => $request->input('breaks')[1]['end'] ?? null,
+            'note' => $request->input('note'),
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('admin.approval.show', $id)->with('success', '勤怠情報を更新しました');
     }
 }

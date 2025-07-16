@@ -12,12 +12,12 @@
 
     <div class="form-group">
         <label>名前</label>
-        <p>{{ $attendance->user_name ?? '未設定' }}</p>
+        <p>{{ $attendance->user_name }}</p>
     </div>
 
     <div class="form-group">
         <label>日付:</label>
-        <p>{{ $attendance->date ?? '未設定' }}</p>
+        <p>{{ $attendance->date }}</p>
     </div>
 
     <div class="form-group">

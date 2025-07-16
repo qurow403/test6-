@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Attendance;
+namespace App\Http\Requests\Admin\Attendance;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 // 追加
-use Illuminate\Contracts\Validation\Validator;
+use Carbon\Carbon;
 
-class UpdateAttendanceRequest extends FormRequest
+class AdminUpdateAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -53,8 +53,15 @@ class UpdateAttendanceRequest extends FormRequest
             $clockIn = $this->input('clock_in');
             $clockOut = $this->input('clock_out');
 
-            if ($clockIn && $clockOut && $clockIn >= $clockOut) {
-                // 出勤 >= 退勤 の場合にエラー
+            try {
+                $clockInTime = \Carbon\Carbon::createFromFormat('H:i', $clockIn);
+                $clockOutTime = \Carbon\Carbon::createFromFormat('H:i', $clockOut);
+            } catch (\Exception $e) {
+                // フォーマット不正ならスキップ
+                return;
+            }
+
+            if ($clockInTime->gte($clockOutTime)) {
                 $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
             }
 
@@ -69,12 +76,23 @@ class UpdateAttendanceRequest extends FormRequest
                     continue;
                 }
 
-                if ($start && ($start < $clockIn || $start > $clockOut)) {
-                    $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です');
-                }
+                try {
+                    if ($start) {
+                        $startTime = Carbon::createFromFormat('H:i', $start);
+                        if ($startTime->lt($clockInTime) && $startTime->gt($clockOutTime)) {
+                            $validator->errors()->add("breaks.$index.start", '出勤時間もしくは退勤時間が不適切な値です');
+                        }
+                    }
 
-                if ($end && ($end < $clockIn || $end > $clockOut)) {
-                    $validator->errors()->add("breaks.$index.end", '休憩時間が勤務時間外です');
+                    if ($end) {
+                        $endTime = Carbon::createFromFormat('H:i', $end);
+                        if ($endTime->lt($clockInTime) || $endTime->gt($clockOutTime)) {
+                            $validator->errors()->add("breaks.$index.end", '出勤時間もしくは退勤時間が不適切な値です');
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // 時刻形式が不正な場合は無視
+                    continue;
                 }
             }
         });

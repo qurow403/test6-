@@ -10,6 +10,16 @@
 <div class="container py-5">
     <h2 class="mb-4">勤怠詳細</h2>
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form action="{{ route('admin.attendance.update', $attendance->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -29,10 +39,10 @@
             <tr>
                 <th>出勤・退勤</th>
                 <td>
-                    <input type="time" name="clock_in" value="{{ \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') }}" required>
+                    <input type="time" name="clock_in" value="{{ \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') }}">
                 </td>
                 <td>
-                    <input type="time" name="clock_out" value="{{ \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') }}" required>
+                    <input type="time" name="clock_out" value="{{ \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') }}">
                 </td>
             </tr>
             @foreach ($attendance->breaks as $index => $break)
@@ -63,6 +73,7 @@
 
         <div class="text-center mt-3">
             <button type="submit" class="btn btn-dark px-4">修正</button>
+            <!-- <a href="{{ route('admin.attendance.index') }}" class="btn btn-outline-secondary mx-2">戻る</a> -->
         </div>
     </form>
 </div>

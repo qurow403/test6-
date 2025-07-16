@@ -60,20 +60,49 @@ class RequestController extends Controller
     // 修正申請承認・詳細画面（管理者）
     public function show($id)
     {
-        // 仮データ（承認 or 承認済みで切り替え）
-        $detail = [
-            'id' => $id,
-            'name' => '西 伶奈',
-            'date' => '2023年6月1日',
-            'start_time' => '09:00',
-            'end_time' => '18:00',
-            'break1_start' => '12:00',
-            'break1_end' => '13:00',
-            'break2_start' => null,
-            'break2_end' => null,
-            'note' => '電車遅延のため',
-            'status' => $id == 1 ? 'pending' : 'approved', // 仮ロジック
+        // セッションに更新データがあるか確認
+    $updated = session("attendance_update.{$id}");
+
+    if ($updated) {
+        $detail = $updated;
+    } else {
+        // 仮のデフォルトデータ
+        $requests = [
+            1 => [
+                'id' => 1,
+                'name' => '西 伶奈',
+                'date' => '2023年6月1日',
+                'start_time' => '09:00',
+                'end_time' => '18:00',
+                'break1_start' => '12:00',
+                'break1_end' => '13:00',
+                'break2_start' => null,
+                'break2_end' => null,
+                'note' => '電車遅延のため',
+            ],
+            2 => [
+                'id' => 2,
+                'name' => '山田 太郎',
+                'date' => '2023年6月1日',
+                'start_time' => '10:00',
+                'end_time' => '19:00',
+                'break1_start' => '13:00',
+                'break1_end' => '14:00',
+                'break2_start' => null,
+                'break2_end' => null,
+                'note' => '寝坊のため',
+            ],
         ];
+
+        if (!isset($requests[$id])) {
+            abort(404, '申請が見つかりません');
+        }
+
+        $detail = $requests[$id];
+        $isApproved = session("approved_ids.{$id}", false);
+        $detail['status'] = $isApproved ? 'approved' : 'pending';
+    }
+
 
         return view('admin.approval.show', compact('detail'));
     }
@@ -81,7 +110,13 @@ class RequestController extends Controller
     // 承認処理
     public function approve(Request $request, $id)
     {
-        // 承認処理（実装例: データベースのstatusをapprovedに更新するなど）
+        // 本番環境で解除する
+        // $detail = AttendanceCorrectionRequest::findOrFail($id);
+        // $detail->status = 'approved';
+        // $detail->save();
+
+        // セッションで承認状態を保存
+        session()->put("approved_ids.{$id}", true);
 
         // 今回は確認用として一旦リダイレクト
         return redirect()->route('admin.approval.show', $id)->with('success', '承認しました');

@@ -66,7 +66,8 @@ Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])
 //         return redirect()->route('login');
 //     }
 // })->name('attendance.show');
-Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'show'])->name('attendance.show');
+// Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'show'])->name('attendance.show');
+Route::get('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('admin.attendance.show');
 
 // 勤怠詳細一覧画面(一般ユーザー・管理者)  更新ルート（PUT）
 // Route::put('/attendance/{id}', function (Request $request, $id) {
@@ -78,8 +79,8 @@ Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::clas
 //         return redirect()->route('login');
 //     }
 // })->name('attendance.update');
-Route::put('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('attendance.update');
-
+// Route::put('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('attendance.update');
+Route::put('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'update'])->name('admin.attendance.update');
 
 // 申請一覧画面(一般ユーザー・管理者)
 Route::get('/stamp_correction_request/list', function (Request $request) {
@@ -133,4 +134,4 @@ Route::get('admin/staff/attendance/{id}/csv', [App\Http\Controllers\Admin\StaffA
 Route::get('stamp_correction_request/approve/{attendance_correct_request}', [App\Http\Controllers\Admin\RequestController::class, 'show'])->name('admin.approval.show');
 // 修正申請承認・詳細画面（管理者） 承認処理
 Route::post('stamp_correction_request/approve/{attendance_correct_request}',
-[App\Http\Controllers\Admin\RequestController::class, 'show'])->name('admin.approval.show');
+[App\Http\Controllers\Admin\RequestController::class, 'approve'])->name('admin.approval.approve');

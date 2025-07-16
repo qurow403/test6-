@@ -97,10 +97,13 @@ class AttendanceController extends Controller
     // 勤怠詳細画面(一般ユーザー)で修正申請するメソッド
     public function update(UpdateAttendanceRequest $request, $id)
     {
-        // バリデーションルール
+        // バリデーションルール通過済のデータ取得
         $validated = $request->validated();
 
-        // 通常はDB更新処理、今回は省略
+        // ダミーデータとして user_name や date を追加
+        $validated['user_name'] = '西 伶奈';
+        $validated['date'] = '2023年6月1日';
+
         logger()->info("修正申請内容", $validated);
 
         return redirect()->route('attendance.pending', $id)
