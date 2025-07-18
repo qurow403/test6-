@@ -7,63 +7,44 @@
 @section('title', '勤怠登録画面(一般ユーザー)')
 
 @section('content')
-<div>
-    <!-- {{-- 日付表示 --}} -->
-    @php
-        $carbon = \Carbon\Carbon::now();
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-    @endphp
-
-    <p>現在日時: {{ $carbon->year }}年{{ $carbon->month }}月{{ $carbon->day }}日（{{ $weekdays[$carbon->dayOfWeek] }}）</p>
-
-    <!-- {{-- 勤務ステータス表示 --}} -->
-    <p>現在のステータス:
-        @switch($attendance->status ?? 'off_duty')
-            @case('off_duty')
-                出勤前（勤務外）
+<div class="container text-center py-5">
+    <p class="status-label">
+        @switch($status)
+            @case('before')
+                <span class="badge bg-secondary">勤務外</span>
                 @break
             @case('working')
-                出勤中（勤務中）
+                <span class="badge bg-primary">出勤中</span>
                 @break
             @case('on_break')
-                休憩中（勤務中）
+                <span class="badge bg-warning">休憩中</span>
                 @break
             @case('finished')
-                退勤済み（勤務外）
+                <span class="badge bg-success">退勤済み</span>
                 @break
-            @default
-                未登録
         @endswitch
     </p>
 
-    <!-- {{-- 勤務ステータスによるフォーム切替 --}} -->
-    <div>
-        @if(($attendance->status ?? 'before') === 'before')
-            <form method="POST" action="{{ route('attendance.clock_in') }}">
-                @csrf
-                <button type="submit">出勤する</button>
-            </form>
+    <h2>{{ $now->format('Y年n月j日 (D)') }}</h2>
+    <h1>{{ $now->format('H:i') }}</h1>
 
-        @elseif($attendance->status === 'working')
-            <form method="POST" action="{{ route('attendance.break_start', $attendance->id) }}">
-                @csrf
-                <button type="submit">休憩</button>
-            </form>
-            <form method="POST" action="{{ route('attendance.clock_out') }}">
-                @csrf
-                <button type="submit">退勤する</button>
-            </form>
-
-        @elseif($attendance->status === 'on_break')
-            <form method="POST" action="{{ route('attendance.break_end', $attendance->id) }}">
-                @csrf
-                <button type="submit">休憩終了</button>
-            </form>
-
-        @elseif($attendance->status === 'finished')
-            <p>本日の勤務は終了しています。</p>
-            <p>お疲れ様でした。</p>
-        @endif
-    </div>
+    <form method="POST" action="{{ route('attendance.action') }}">
+        @csrf
+        @switch($status)
+            @case('before')
+                <button type="submit" name="action" value="clock_in" class="btn btn-dark mt-4 px-5">出勤</button>
+                @break
+            @case('working')
+                <button type="submit" name="action" value="clock_out" class="btn btn-dark mt-4 me-2 px-4">退勤</button>
+                <button type="submit" name="action" value="break_in" class="btn btn-outline-dark mt-4 px-4">休憩入</button>
+                @break
+            @case('on_break')
+                <button type="submit" name="action" value="break_out" class="btn btn-outline-dark mt-4 px-4">休憩戻</button>
+                @break
+            @case('finished')
+                <p class="mt-4 fs-4">お疲れ様でした。</p>
+                @break
+        @endswitch
+    </form>
 </div>
 @endsection

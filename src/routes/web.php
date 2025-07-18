@@ -44,9 +44,18 @@ Route::get('/email/verify', function () {
 require __DIR__.'/auth.php';
 // ログインできていないとhttp://localhost/loginに強制的にバックする
 
+// 勤怠登録画面(一般ユーザー) 出勤前・出勤後・休憩中・退勤後 勤怠登録処理
+Route::middleware('auth')->group(function () {
+    // Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
+    // Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clock_in');
+    Route::post('/attendance/break-start', [AttendanceController::class, 'breakStart'])->name('attendance.break_start');
+    Route::post('/attendance/break-end', [AttendanceController::class, 'breakEnd'])->name('attendance.break_end');
+    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clock_out');
+});
 
 // 勤怠登録画面(一般ユーザー)
 Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
+Route::post('/attendance/action', [AttendanceController::class, 'handleAction'])->name('attendance.action');
 // 勤怠一覧画面(一般ユーザー)
 Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
 // 勤怠詳細画面＿承認待ち(一般ユーザー)
@@ -66,8 +75,10 @@ Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])
 //         return redirect()->route('login');
 //     }
 // })->name('attendance.show');
-// Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'show'])->name('attendance.show');
-Route::get('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'show'])->name('admin.attendance.show');
+Route::get('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'show'])->name('attendance.show');
+// Route::get('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'show'])
+// ->where('id', '[0-9]+')
+// ->name('admin.attendance.show');
 
 // 勤怠詳細一覧画面(一般ユーザー・管理者)  更新ルート（PUT）
 // Route::put('/attendance/{id}', function (Request $request, $id) {
@@ -79,8 +90,8 @@ Route::get('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController
 //         return redirect()->route('login');
 //     }
 // })->name('attendance.update');
-// Route::put('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('attendance.update');
-Route::put('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'update'])->name('admin.attendance.update');
+Route::put('/attendance/{id}', [\App\Http\Controllers\AttendanceController::class, 'update'])->name('attendance.update');
+// Route::put('/attendance/{id}', [\App\Http\Controllers\Admin\AttendanceController::class, 'update'])->name('admin.attendance.update');
 
 // 申請一覧画面(一般ユーザー・管理者)
 Route::get('/stamp_correction_request/list', function (Request $request) {
@@ -97,15 +108,6 @@ Route::get('/stamp_correction_request/list', function (Request $request) {
     return app(\App\Http\Controllers\Admin\RequestController::class)->index($request);
 })->name('admin.stamp_correction_request.index');
 // ->name('stamp_correction_request.index');
-
-
-Route::middleware('auth')->group(function () {
-    Route::post('/attendance/clock-in', [AttendanceController::class, 'clockIn'])->name('attendance.clock_in');
-    Route::post('/attendance/break-start', [AttendanceController::class, 'breakStart'])->name('attendance.break_start');
-    Route::post('/attendance/break-end', [AttendanceController::class, 'breakEnd'])->name('attendance.break_end');
-    Route::post('/attendance/clock-out', [AttendanceController::class, 'clockOut'])->name('attendance.clock_out');
-    // Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
-});
 
 
 // ログイン画面(管理者)
