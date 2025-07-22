@@ -20,38 +20,12 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         // 本番実装で解除
-        // $date = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
+        // 任意の日付
+        $date = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
 
-        // $attendances = Attendance::with(['user', 'breaks'])
-        //     ->whereDate('date', $date->toDateString())
-        //     ->get();
-
-        $date = $request->input('date')
-            ? Carbon::parse($request->input('date'))
-            : Carbon::today();
-
-        // ダミー出勤・退勤時刻
-        $clockIn = $date->copy()->setTime(9, 0);
-        $clockOut = $date->copy()->setTime(18, 0);
-
-        // ダミー休憩時間
-        $breakDuration = 3600; // 秒（1時間）
-
-        // 実働時間
-        $workedDuration = $clockOut->diffInSeconds($clockIn) - $breakDuration;
-
-        // ダミーAttendanceコレクション作成
-        $attendances = collect([
-            (object)[
-                'id' => 1,
-                'user' => (object)['name' => 'テストユーザー'],
-                'clock_in' => $clockIn,
-                'clock_out' => $clockOut,
-                'break_duration' => gmdate('H:i', $breakDuration),
-                'worked_duration' => gmdate('H:i', $workedDuration),
-            ],
-            // 2人目など追加可能
-        ]);
+        $attendances = Attendance::with(['user', 'breaks'])
+            ->whereDate('date', $date->toDateString())
+            ->get();
 
         return view('admin.attendance.index', compact('attendances', 'date'));
     }
@@ -65,7 +39,7 @@ class AttendanceController extends Controller
         // ダミーの日付と時刻
         $date = \Carbon\Carbon::create(2023, 6, 1);
         $clockIn = $date->copy()->setTime(9, 0);
-        $clockOut = $date->copy()->setTime(20, 0);
+        $clockOut = $date->copy()->setTime(18, 0);
 
         // ダミー休憩
         $breaks = collect([

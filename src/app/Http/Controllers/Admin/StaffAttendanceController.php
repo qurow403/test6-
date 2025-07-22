@@ -24,17 +24,32 @@ class StaffAttendanceController extends Controller
         $daysInMonth = $date->daysInMonth;
         $attendances = [];
 
+        // ✅ ここで休日リストを定義する（3, 4, 11, 18, 25）
+        $holidays = [3, 4, 11, 18, 25];
+
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $day = $date->copy()->day($i);
 
-            $attendances[] = (object)[
-                'id' => $i,
-                'date' => $day,
-                'clock_in' => '09:00',
-                'clock_out' => '18:00',
-                'break_time' => '1:00',
-                'total_time' => '8:00',
-            ];
+            // 休みなら空白
+            if (in_array($i, $holidays)) {
+                $attendances[] = (object)[
+                    'id' => $i,
+                    'date' => $day,
+                    'clock_in' => '',
+                    'clock_out' => '',
+                    'break_time' => '',
+                    'total_time' => '',
+                ];
+            } else {
+                $attendances[] = (object)[
+                    'id' => $i,
+                    'date' => $day,
+                    'clock_in' => '09:00',
+                    'clock_out' => '18:00',
+                    'break_time' => '1:00',
+                    'total_time' => '8:00',
+                ];
+            }
         }
 
         $user = (object)[
@@ -51,17 +66,33 @@ class StaffAttendanceController extends Controller
         $date = $month ? Carbon::parse($month . '-01') : Carbon::now()->startOfMonth();
         $daysInMonth = $date->daysInMonth;
 
+         // ✅ 休日リスト（この日にちは出勤データを空白にする）
+        $holidays = [3, 4, 11, 18, 25];
+
         // ダミーデータ生成（実際はDBから取得）
         $attendances = [];
+
         for ($i = 1; $i <= $daysInMonth; $i++) {
             $day = $date->copy()->day($i);
-            $attendances[] = [
-                '日付' => $day->format('Y-m-d'),
-                '出勤' => '09:00',
-                '退勤' => '18:00',
-                '休憩' => '1:00',
-                '合計' => '8:00',
-            ];
+
+            if (in_array($i, $holidays)) {
+                // 休日は空白
+                $attendances[] = [
+                    '日付' => $day->format('Y-m-d'),
+                    '出勤' => '',
+                    '退勤' => '',
+                    '休憩' => '',
+                    '合計' => '',
+                ];
+            } else {
+                $attendances[] = [
+                    '日付' => $day->format('Y-m-d'),
+                    '出勤' => '09:00',
+                    '退勤' => '18:00',
+                    '休憩' => '1:00',
+                    '合計' => '8:00',
+                ];
+            }
         }
 
         $fileName = "attendance_{$id}_{$date->format('Y_m')}.csv";

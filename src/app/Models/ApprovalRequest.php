@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ApprovalRequest extends Model
+class approvalRequest extends Model
 {
     use HasFactory;
 
@@ -20,5 +20,4 @@ class ApprovalRequest extends Model
     {
         return $this->belongsTo(Attendance::class);
     }
-
 }

@@ -43,23 +43,18 @@ class LoginRequest extends FormRequest
      */
     public function authenticate()
     {
-        // $this->ensureIsNotRateLimited();
+        $this->ensureIsNotRateLimited();
 
-        // if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-        //     RateLimiter::hit($this->throttleKey());
+        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
 
-        //     throw ValidationException::withMessages([
-        //         'email' => trans('auth.failed'),
-        //     ]);
-        // }
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
 
-        // RateLimiter::clear($this->throttleKey());
+        RateLimiter::clear($this->throttleKey());
 
-
-        // 仮で「ログイン情報が登録されていません」とエラー文を表示させるために一時的に定義している
-        throw \Illuminate\Validation\ValidationException::withMessages([
-            'email' => trans('auth.failed'),
-        ]);
     }
 
     /**

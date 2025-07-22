@@ -23,6 +23,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'role',
+        'admin',
     ];
 
     /**
@@ -53,7 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
     // ApprovalRequestsとのリレーション（1対多）
     public function ApprovalRequests()
     {
-        return $this->hasMany(ApprovalRequest::class);
+        return $this->hasMany(approvalRequest::class);
     }
 
     public function getIsAdminAttribute()

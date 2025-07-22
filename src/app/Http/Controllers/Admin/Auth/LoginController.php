@@ -21,24 +21,13 @@ class LoginController extends Controller
 
     public function login(AdminLoginRequest $request)
     {
-        // $credentials = $request->validate([
-        //     'email' => ['required', 'email'],
-        //     'password' => ['required'],
-        // ]);
-
-        // if (auth()->guard('admin')->attempt($credentials)) {
-        //     $request->session()->regenerate();
-        //     return redirect()->intended(route('admin.attendance.index')); // 管理者TOPなどに
-        // }
-
-        // return back()->withErrors([
-        //     'email' => 'メールアドレスまたはパスワードが正しくありません。',
-        // ])->onlyInput('email');
-
         $credentials = $request->only('email', 'password');
 
         if (Auth::guard('admin')->attempt($credentials)) {
-            return redirect()->route('admin.stamp_correction_request.index');
+            // 認証成功時にセッションを再生成
+            $request->session()->regenerate();
+
+            return redirect()->route('admin.attendance.index');
         }
 
         // ログイン失敗時のエラーメッセージ
@@ -47,6 +36,7 @@ class LoginController extends Controller
         ])->withInput();
     }
 
+    // ログアウト処理
     public function logout(Request $request)
     {
         auth('admin')->logout();

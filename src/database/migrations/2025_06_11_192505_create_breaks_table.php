@@ -16,7 +16,7 @@ class CreateBreaksTable extends Migration
         Schema::create('breaks', function (Blueprint $table) {
             $table->id(); // → BIGINT UNSIGNED
             $table->foreignId('attendance_id')->constrained()->onDelete('cascade'); // → BIGINT UNSIGNED + FK
-            $table->timestamp('break_start');
+            $table->timestamp('break_start')->nullable();
             $table->timestamp('break_end')->nullable();
             $table->timestamps();
         });

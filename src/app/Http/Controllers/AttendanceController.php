@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 // 勤怠詳細画面(一般ユーザー)でのバリデーション実装のために追加
 use App\Http\Requests\Attendance\UpdateAttendanceRequest;
 
+// フォームリクエスト追加
+use App\Http\Requests\AttendanceActionRequest;
 
 // Attendance・Break(Time)モデル・時間追加
 use App\Models\Attendance;
@@ -19,22 +21,24 @@ class AttendanceController extends Controller
     // 出勤登録画面(一般ユーザー)
     public function create()
     {
-        // ダミーの現在時刻
-        $now = Carbon::create(2023, 6, 1, 8, 0, 0); // 表示用
+        $now = Carbon::now(); // 現在日時を取得（本番用）
 
-        // ダミー状態（本来はDBから今日の勤怠情報取得して判定）
-        // 状態: before, working, on_break, finished
-        $status = 'before'; // 初期状態
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'ログインしてください');
+        }
 
-        // 状態を切り替えるサンプル（本番ではユーザーや今日の打刻情報から判定）
-        // ここでランダムに状態切り替え（テスト表示用）
-        // $status = collect(['before', 'working', 'on_break', 'finished'])->random();
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('date', $now->toDateString())
+            ->first();
+
+        $status = $attendance->status ?? Attendance::STATUS_BEFORE;
 
         return view('attendance.create', compact('now', 'status'));
     }
 
     // 勤怠登録処理(一般ユーザー)
-    public function handleAction(Request $request)
+    public function handleAction(AttendanceActionRequest $request)
     {
         $action = $request->input('action');
 
@@ -75,7 +79,7 @@ class AttendanceController extends Controller
             'user_id' => $user->id,
             'date' => $today,
             'clock_in' => now(),
-            'status' => 'working',
+            'status' => Attendance::STATUS_WORKING,
         ]);
 
         return redirect()->route('attendance.create')->with('success', '出勤しました');
@@ -96,7 +100,7 @@ class AttendanceController extends Controller
         }
 
         // 休憩中でないことを確認
-        if ($attendance->status === 'on_break') {
+        if ($attendance->status === Attendance::STATUS_ON_BREAK) {
             return back()->with('error', 'すでに休憩中です');
         }
 
@@ -106,7 +110,7 @@ class AttendanceController extends Controller
         ]);
 
         // ステータス更新
-        $attendance->update(['status' => 'on_break']);
+        $attendance->update(['status' => Attendance::STATUS_ON_BREAK]);
 
         return redirect()->route('attendance.create')->with('success', '休憩開始しました');
     }
@@ -122,7 +126,7 @@ class AttendanceController extends Controller
             ->with('breaks')
             ->first();
 
-        if (!$attendance || $attendance->status !== 'on_break') {
+        if (!$attendance || $attendance->status !== Attendance::STATUS_ON_BREAK) {
             return back()->with('error', '現在は休憩中ではありません');
         }
 
@@ -139,7 +143,7 @@ class AttendanceController extends Controller
         $latestBreak->update(['break_end' => now()]);
 
         // ステータス更新
-        $attendance->update(['status' => 'working']);
+        $attendance->update(['status' => Attendance::STATUS_WORKING]);
 
         return redirect()->route('attendance.create')->with('success', '休憩終了しました');
     }
@@ -152,6 +156,7 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('date', $today)
+            ->with('breaks')
             ->first();
 
         if (!$attendance || !$attendance->clock_in) {
@@ -162,7 +167,7 @@ class AttendanceController extends Controller
             return back()->with('error', 'すでに退勤済みです');
         }
 
-        if ($attendance->status === 'on_break') {
+        if ($attendance->status === Attendance::STATUS_ON_BREAK) {
             return back()->with('error', '休憩終了後に退勤してください');
         }
 
@@ -176,7 +181,7 @@ class AttendanceController extends Controller
 
         $attendance->update([
             'clock_out' => now(),
-            'status' => 'finished',
+            'status' => Attendance::STATUS_FINISHED,
             'worked_minutes' => max($workedMinutes, 0),
         ]);
 
@@ -186,36 +191,25 @@ class AttendanceController extends Controller
     // 勤怠一覧画面(一般ユーザー)
     public function index(Request $request)
     {
-        // ルートパラメータ ?month=2023-07 などを取得（なければ現在の月）
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'ログインしてください');
+        }
+
         $currentMonth = $request->input('month', Carbon::now()->format('Y-m'));
-
-        // 現在の月をCarbonインスタンスとして扱う
         $current = Carbon::parse($currentMonth);
-
-        // 前月・翌月の文字列を生成
         $prevMonth = $current->copy()->subMonth()->format('Y-m');
         $nextMonth = $current->copy()->addMonth()->format('Y-m');
 
-        // 表示対象の月の日付範囲を生成
         $start = $current->copy()->startOfMonth();
         $end = $current->copy()->endOfMonth();
 
-        // ダミー勤怠データ生成（本番はDBから取得）
-        $attendances = collect();
-        $id = 1;
-
-        for ($date = $start; $date->lte($end); $date->addDay()) {
-            // 土日も表示したいならこのままでOK（除外したいなら $date->isWeekday() チェック）
-            $attendances->push((object)[
-                'id' => $id++,
-                'date' => $date->format('Y-m-d'),
-                'clock_in' => $date->copy()->setTime(9, 0, 0)->toDateTimeString(),
-                'clock_out' => $date->copy()->setTime(18, 0, 0)->toDateTimeString(),
-                'break1' => $date->copy()->setTime(12, 0, 0)->toDateTimeString(),
-                'break2' => $date->copy()->setTime(13, 0, 0)->toDateTimeString(),
-                'status' => 'finished',
-            ]);
-        }
+        // 勤怠情報をDBから取得（ログインユーザーの今月分）
+        $attendances = Attendance::where('user_id', $user->id)
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->with('breaks') // 休憩も取得
+            ->orderBy('date')
+            ->get();
 
         $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
@@ -225,18 +219,7 @@ class AttendanceController extends Controller
     // 勤怠詳細画面(一般ユーザー)
     public function show($id)
     {
-        $attendance = (object)[
-            'id' => $id,
-            'user_name' => '西 伶奈',
-            'date' => '2023-06-01',
-            'clock_in' => '09:00',
-            'clock_out' => '18:00',
-            'note' => '電車遅延のため',
-            'breaks' => [
-                ['start' => '12:00', 'end' => '13:00'],
-                ['start' => '', 'end' => ''],
-            ]
-        ];
+        $attendance = Attendance::with(['breaks', 'user'])->findOrFail($id);
 
         return view('attendance.show', compact('attendance'));
     }
@@ -244,13 +227,17 @@ class AttendanceController extends Controller
     // 勤怠詳細画面(一般ユーザー)で修正申請するメソッド
     public function update(UpdateAttendanceRequest $request, $id)
     {
-        // バリデーションルール通過済のデータ取得
+        // バリデーションルール通過済のデータ取得、バリデーション済データ取得
         $validated = $request->validated();
 
-        // ダミーデータとして user_name や date を追加
-        $validated['user_name'] = '西 伶奈';
-        $validated['date'] = '2023年6月1日';
+        // 該当勤怠データを取得（userも取得して名前参照）
+        $attendance = Attendance::with('user')->findOrFail($id);
 
+        // 必要に応じて名前・日付などをログに含める（これはログ用の補足）
+        $validated['user_name'] = $attendance->user->name ?? '不明';
+        $validated['date'] = $attendance->date;
+
+        // ログ出力（送信確認用）
         logger()->info("修正申請内容", $validated);
 
         return redirect()->route('attendance.pending', $id)
@@ -261,43 +248,28 @@ class AttendanceController extends Controller
     // 勤怠詳細画面＿承認待ち(一般ユーザー)
     public function pending($id)
     {
-        $submitted = session('submitted'); // セッションから取得
+        // 自分の勤怠で、ステータスが承認待ちのものを取得
+        $attendance = Attendance::with(['breaks', 'user'])
+            ->where('id', $id)
+            ->where('user_id', Auth::id())
+            ->where('status', Attendance::STATUS_PENDING) // 定数がない場合は直接 'pending'
+            ->firstOrFail();
 
-        // if (!$submitted) {
-        //     return redirect()->route('attendance.index')->with('error', '表示できるデータがありません');
-        // }
-
-        // clock_in / clock_out を H:i 形式に整形（nullチェック付き）
-        $clockIn = isset($submitted['clock_in']) && $submitted['clock_in']
-            ? date('H:i', strtotime($submitted['clock_in']))
-            : '未入力';
-
-        $clockOut = isset($submitted['clock_out']) && $submitted['clock_out']
-            ? date('H:i', strtotime($submitted['clock_out']))
-            : '未入力';
-
-        // breaks を H:i 形式で整形（breaks が存在する場合のみ）
-        $breaks = collect($submitted['breaks'] ?? [])->map(function ($break) {
-            return [
-                'start' => isset($break['start']) && $break['start']
-                    ? date('H:i', strtotime($break['start']))
-                    : '-',
-                'end' => isset($break['end']) && $break['end']
-                    ? date('H:i', strtotime($break['end']))
-                    : '-',
-            ];
-        })->toArray();
-
-        // ダミーデータ含めたattendanceオブジェクト生成
-        $attendance = (object)[
-            'id' => $id,
-            'user_name' => $submitted['user_name'] ?? '未設定ユーザー',
-            'date' => $submitted['date'] ?? '未設定日付',
-            'clock_in' => $clockIn,
-            'clock_out' => $clockOut,
-            'breaks' => $breaks,
-            'note' => $submitted['note'] ?? '（備考なし）',
-            'message' => '✳︎承認待ちのため修正できません。'
+        // 表示用にフォーマットを整える
+        $formattedAttendance = (object)[
+            'id' => $attendance->id,
+            'user_name' => $attendance->user->name,
+            'date' => Carbon::parse($attendance->date)->format('Y年n月j日'),
+            'clock_in' => $attendance->clock_in,
+            'clock_out' => $attendance->clock_out,
+            'breaks' => $attendance->breaks->map(function ($break) {
+                return [
+                    'start' => $break->start,
+                    'end' => $break->end,
+                ];
+            }),
+            'note' => $attendance->note,
+            'message' => '✳︎承認待ちのため修正できません。',
         ];
 
         return view('attendance.pending', compact('attendance', 'id'));

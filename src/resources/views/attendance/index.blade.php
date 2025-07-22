@@ -10,14 +10,14 @@
 <div class="container">
     <h2 class="text-xl font-bold mb-4">勤怠一覧</h2>
 
-    {{-- 月の移動と表示 --}}
+    <!-- {{-- 月の移動と表示 --}} -->
     <div class="flex items-center justify-between mb-4">
         <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}" class="btn btn-secondary">前月</a>
         <h3 class="text-lg font-semibold">{{ \Carbon\Carbon::parse($currentMonth)->format('Y年n月') }}</h3>
         <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}" class="btn btn-secondary">翌月</a>
     </div>
 
-    {{-- 勤怠一覧表示 --}}
+    <!-- {{-- 勤怠一覧表示 --}} -->
     <table class="table-auto w-full text-left border-collapse border">
         <thead>
             <tr class="bg-gray-100">
@@ -31,20 +31,47 @@
         </thead>
         <tbody>
             @forelse ($attendances as $attendance)
-                <tr>
-                    <td class="border px-4 py-2">{{ \Carbon\Carbon::parse($attendance->date)->format('Y年n月j日（'.$weekdays[\Carbon\Carbon::parse($attendance->date)->dayOfWeek].'）') }}</td>
-                    <td class="border px-4 py-2">{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : 'ー' }}</td>
-                    <td class="border px-4 py-2">{{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : 'ー' }}</td>
+            <tr>
+                    <!-- {{-- ★ 日付 --}} -->
                     <td class="border px-4 py-2">
-                    @if (isset($attendance->break1) && isset($attendance->break2))
-                        @php
-                            $duration = \Carbon\Carbon::parse($attendance->break1)->diffInMinutes(\Carbon\Carbon::parse($attendance->break2));
-                        @endphp
-                        {{ floor($duration / 60) }}:{{ str_pad($duration % 60, 2, '0', STR_PAD_LEFT) }}
-                    @else
-                        ー
-                    @endif
+                        {{ \Carbon\Carbon::parse($attendance->date)->format('Y年n月j日（'.$weekdays[\Carbon\Carbon::parse($attendance->date)->dayOfWeek].'）') }}
                     </td>
+
+                    <!-- {{-- ★ 出勤 --}} -->
+                    <td class="border px-4 py-2">
+                        {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : 'ー' }}
+                    </td>
+
+                    <!-- {{-- ★ 退勤 --}} -->
+                    <td class="border px-4 py-2">
+                        {{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : 'ー' }}
+                    </td>
+
+                    <!-- {{-- ★ 休憩 → ブレイク合計を正確に計算 --}} -->
+                    <td class="border px-4 py-2">
+                        @php
+                            $breakMinutes = $attendance->breaks->sum(function ($break) {
+                                return ($break->break_start && $break->break_end)
+                                    ? \Carbon\Carbon::parse($break->break_end)->diffInMinutes($break->break_start)
+                                    : 0;
+                            });
+                        @endphp
+                        {{ $breakMinutes ? floor($breakMinutes / 60) . ':' . str_pad($breakMinutes % 60, 2, '0', STR_PAD_LEFT) : 'ー' }}
+                    </td>
+
+                    <!-- {{-- ★ 合計 → 出勤〜退勤から休憩時間を引く --}} -->
+                    <td class="border px-4 py-2">
+                        @if ($attendance->clock_in && $attendance->clock_out)
+                            @php
+                                $totalMinutes = \Carbon\Carbon::parse($attendance->clock_in)->diffInMinutes($attendance->clock_out) - $breakMinutes;
+                            @endphp
+                            {{ floor($totalMinutes / 60) }}:{{ str_pad($totalMinutes % 60, 2, '0', STR_PAD_LEFT) }}
+                        @else
+                            ー
+                        @endif
+                    </td>
+
+                    <!-- {{-- ★ 合計 → 出勤〜退勤から休憩時間を引く --}} -->
                     <td class="border px-4 py-2">
                         @if ($attendance->clock_in && $attendance->clock_out)
                             {{ \Carbon\Carbon::parse($attendance->clock_out)->diff(\Carbon\Carbon::parse($attendance->clock_in))->format('%H:%I') }}
@@ -52,13 +79,15 @@
                             ー
                         @endif
                     </td>
+
+                    <!-- {{-- ★ 詳細リンクだけに修正 --}} -->
                     <td class="border px-4 py-2">
                         <a href="{{ route('attendance.show', $attendance->id) }}" class="text-blue-500 hover:underline">詳細</a>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center py-4">この月の勤怠データはありません。</td>
+                    <td colspan="6" class="text-center py-4">この月の勤怠データはありません。</td>
                 </tr>
             @endforelse
         </tbody>

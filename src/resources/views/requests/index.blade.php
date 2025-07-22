@@ -10,7 +10,7 @@
 <div class="container">
     <h1 class="title">申請一覧</h1>
 
-    {{-- タブ切り替え --}}
+    <!-- {{-- タブ --}} -->
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
@@ -22,6 +22,7 @@
         </li>
     </ul>
 
+    <!-- {{-- テーブル --}} -->
     <table class="table table-bordered bg-white rounded">
         <thead>
             <tr>

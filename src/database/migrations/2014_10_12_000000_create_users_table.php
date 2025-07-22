@@ -20,7 +20,6 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable(); // メール認証のタイムスタンプ、メール認証用
             $table->string('password'); // ハッシュ化されたパスワード
             $table->enum('role', ['user', 'admin'])->default('user'); // 役割(管理者/一般ユーザー)を判定するカラム
-            $table->boolean('admin')->default(false);
             $table->rememberToken(); // ログイン状態保持用
             $table->timestamps();
         });

@@ -20,12 +20,14 @@ class AttendanceSeeder extends Seeder
      */
     public function run()
     {
-        foreach (User::all() as $user) {
-            Attendance::create([
+        // 任意の6名のユーザーを作成
+        $users = User::factory()->count(6)->create();
+
+        foreach ($users as $user) {
+            // 勤怠データを1日分作成（例：2023-06-01）
+            Attendance::factory()->create([
                 'user_id' => $user->id,
-                'date' => Carbon::today()->toDateString(),
-                'clock_in' => Carbon::today()->setTime(9, 0),
-                'clock_out' => Carbon::today()->setTime(18, 0),
+                'date' => '2023-06-01',
             ]);
         }
     }
