@@ -7,7 +7,7 @@
 @section('title', '修正申請承認・詳細画面（管理者）')
 
 @section('content')
-    <h2 class="text-center mb-4">勤怠詳細</h2>
+    <h2 class="text-center mb-4">修正申請 詳細</h2>
 
     <div class="card mx-auto p-4" style="max-width: 600px;">
         <table class="table table-bordered">
@@ -21,21 +21,25 @@
             </tr>
             <tr>
                 <th>出勤・退勤</th>
-                <td>{{ $detail['start_time'] }} ～ {{ $detail['end_time'] }}</td>
+                <td>
+                    {{ $detail['clock_in'] ?? 'ー' }} 〜 {{ $detail['clock_out'] ?? 'ー' }}
+                </td>
             </tr>
             <tr>
                 <th>休憩</th>
-                <td>{{ $detail['break1_start'] }} ～ {{ $detail['break1_end'] }}</td>
+                <td>
+                    {{ $detail['breaks'][0]['start'] ?? 'ー' }} 〜 {{ $detail['breaks'][0]['end'] ?? 'ー' }}
+                </td>
             </tr>
             <tr>
                 <th>休憩2</th>
                 <td>
-                    {{ $detail['break2_start'] && $detail['break2_end'] ? $detail['break2_start'].' ～ '.$detail['break2_end'] : '―' }}
+                    {{ $detail['breaks'][1]['start'] ?? 'ー' }} 〜 {{ $detail['breaks'][1]['end'] ?? 'ー' }}
                 </td>
             </tr>
             <tr>
                 <th>備考</th>
-                <td>{{ $detail['note'] }}</td>
+                <td>{{ $detail['note'] ?? 'ー' }}</td>
             </tr>
         </table>
 

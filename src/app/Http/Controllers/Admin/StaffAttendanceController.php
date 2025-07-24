@@ -8,109 +8,152 @@ use Illuminate\Http\Request;
 // 追加
 use Carbon\Carbon;
 
+// モデル追加
+use App\Models\User;
+use App\Models\Attendance;
+
 // CSV出力機能付与のために追加
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StaffAttendanceController extends Controller
 {
+    // スタッフ別勤怠一覧画面（管理者）
     public function index(Request $request, $id)
     {
-        // 対象月（指定がなければ今月）
+        $user = User::findOrFail($id);
         $date = $request->input('month')
             ? Carbon::parse($request->input('month') . '-01')
             : Carbon::now()->startOfMonth();
 
-        // 月の日数分のダミーデータを作成
-        $daysInMonth = $date->daysInMonth;
-        $attendances = [];
+        $start = $date->copy()->startOfMonth();
+        $end = $date->copy()->endOfMonth();
 
-        // ✅ ここで休日リストを定義する（3, 4, 11, 18, 25）
-        $holidays = [3, 4, 11, 18, 25];
+        $attendanceRecords = Attendance::with('breaks')
+            ->where('user_id', $id)
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->get()
+            ->keyBy('date');
+
+        $attendances = [];
+        $daysInMonth = $date->daysInMonth;
 
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            $day = $date->copy()->day($i);
+            $currentDate = $date->copy()->day($i)->toDateString();
+            $carbonDate = $date->copy()->day($i);
 
-            // 休みなら空白
-            if (in_array($i, $holidays)) {
+            if ($attendanceRecords->has($currentDate)) {
+                $record = $attendanceRecords[$currentDate];
+
+                // 休憩合計（分）
+                $breakMinutes = $record->breaks->reduce(function ($carry, $break) {
+                    if ($break->break_start && $break->break_end) {
+                        $start = Carbon::parse($break->break_start);
+                        $end = Carbon::parse($break->break_end);
+                        return $carry + $end->diffInMinutes($start);
+                    }
+                    return $carry;
+                }, 0);
+
                 $attendances[] = (object)[
-                    'id' => $i,
-                    'date' => $day,
+                    'id' => $record->id,
+                    'date' => $carbonDate,
+                    'clock_in' => optional($record->clock_in)->format('H:i') ?? '',
+                    'clock_out' => optional($record->clock_out)->format('H:i') ?? '',
+                    'break_time' => $this->formatMinutes($breakMinutes),
+                    'total_time' => $this->formatMinutes($record->worked_minutes),
+                ];
+            } else {
+                // 該当日が記録されていない
+                $attendances[] = (object)[
+                    'id' => null,
+                    'date' => $carbonDate,
                     'clock_in' => '',
                     'clock_out' => '',
                     'break_time' => '',
                     'total_time' => '',
                 ];
-            } else {
-                $attendances[] = (object)[
-                    'id' => $i,
-                    'date' => $day,
-                    'clock_in' => '09:00',
-                    'clock_out' => '18:00',
-                    'break_time' => '1:00',
-                    'total_time' => '8:00',
-                ];
             }
         }
-
-        $user = (object)[
-            'id' => $id,
-            'name' => '西伶奈'
-        ];
 
         return view('admin.staff_attendance.index', compact('attendances', 'user', 'date'));
     }
 
+    // CSV出力処理
     public function exportCsv(Request $request, $id)
     {
+        $user = User::findOrFail($id);
         $month = $request->input('month');
         $date = $month ? Carbon::parse($month . '-01') : Carbon::now()->startOfMonth();
+        $start = $date->copy()->startOfMonth();
+        $end = $date->copy()->endOfMonth();
+
+        $attendanceRecords = Attendance::with('breaks')
+            ->where('user_id', $id)
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->get()
+            ->keyBy('date');
+
         $daysInMonth = $date->daysInMonth;
-
-         // ✅ 休日リスト（この日にちは出勤データを空白にする）
-        $holidays = [3, 4, 11, 18, 25];
-
-        // ダミーデータ生成（実際はDBから取得）
-        $attendances = [];
+        $csvData = [];
 
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            $day = $date->copy()->day($i);
+            $currentDate = $date->copy()->day($i)->toDateString();
+            $carbonDate = $date->copy()->day($i);
 
-            if (in_array($i, $holidays)) {
-                // 休日は空白
-                $attendances[] = [
-                    '日付' => $day->format('Y-m-d'),
+            if ($attendanceRecords->has($currentDate)) {
+                $record = $attendanceRecords[$currentDate];
+
+                $breakMinutes = $record->breaks->reduce(function ($carry, $break) {
+                    if ($break->break_start && $break->break_end) {
+                        $start = Carbon::parse($break->break_start);
+                        $end = Carbon::parse($break->break_end);
+                        return $carry + $end->diffInMinutes($start);
+                    }
+                    return $carry;
+                }, 0);
+
+                $csvData[] = [
+                    '日付' => $carbonDate->format('Y-m-d'),
+                    '出勤' => optional($record->clock_in)->format('H:i') ?? '',
+                    '退勤' => optional($record->clock_out)->format('H:i') ?? '',
+                    '休憩' => $this->formatMinutes($breakMinutes),
+                    '合計' => $this->formatMinutes($record->worked_minutes),
+                ];
+            } else {
+                $csvData[] = [
+                    '日付' => $carbonDate->format('Y-m-d'),
                     '出勤' => '',
                     '退勤' => '',
                     '休憩' => '',
                     '合計' => '',
                 ];
-            } else {
-                $attendances[] = [
-                    '日付' => $day->format('Y-m-d'),
-                    '出勤' => '09:00',
-                    '退勤' => '18:00',
-                    '休憩' => '1:00',
-                    '合計' => '8:00',
-                ];
             }
         }
 
-        $fileName = "attendance_{$id}_{$date->format('Y_m')}.csv";
+        $fileName = "attendance_{$user->id}_{$date->format('Y_m')}.csv";
 
         $headers = [
             "Content-Type" => "text/csv",
             "Content-Disposition" => "attachment; filename=\"$fileName\"",
         ];
 
-        $callback = function () use ($attendances) {
+        $callback = function () use ($csvData) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, array_keys($attendances[0])); // ヘッダー行
-            foreach ($attendances as $row) {
+            fputcsv($file, array_keys($csvData[0]));
+            foreach ($csvData as $row) {
                 fputcsv($file, $row);
             }
             fclose($file);
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function formatMinutes($minutes)
+    {
+        if (is_null($minutes)) return '';
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+        return sprintf('%d:%02d', $hours, $mins);
     }
 }

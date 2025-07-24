@@ -30,22 +30,30 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($attendances as $attendance)
+            @forelse($attendances as $attendance)
             <tr>
                 <td>
                     @php
                         $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
                         $w = $attendance->date->dayOfWeek;
                     @endphp
-                    {{ $attendance->date->format('m/d') }}({{ $weekdays[$w] }})
+                    {{ $attendance->date->format('m/d') }} ({{ $weekdays[$w] }})
                 </td>
-                <td>{{ $attendance->clock_in }}</td>
-                <td>{{ $attendance->clock_out }}</td>
-                <td>{{ $attendance->break_time }}</td>
-                <td>{{ $attendance->total_time }}</td>
-                <td><a href="{{ route('admin.attendance.show', ['id' => $attendance->id]) }}">詳細</a></td>
+                <td>{{ $attendance->clock_in ?? 'ー' }}</td>
+                <td>{{ $attendance->clock_out ?? 'ー' }}</td>
+                <td>{{ $attendance->break_time ?? 'ー' }}</td>
+                <td>{{ $attendance->total_time ?? 'ー' }}</td>
+                <td>
+                    @if ($attendance->id)
+                        <a href="{{ route('admin.attendance.show', ['id' => $attendance->id]) }}">詳細</a>
+                    @else
+                        ー
+                    @endif
+                </td>
             </tr>
-            @endforeach
+            @empty
+            <tr><td colspan="6" class="text-center">データがありません。</td></tr>
+            @endforelse
         </tbody>
     </table>
 

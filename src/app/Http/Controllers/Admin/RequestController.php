@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+// モデル追加（AttendanceCorrectionRequest(勤怠修正申請)）
+use App\Models\AttendanceCorrectionRequest;
 
 class RequestController extends Controller
 {
@@ -12,113 +16,80 @@ class RequestController extends Controller
     {
         $status = $request->query('status', 'pending');
 
-        $pending = [
-            [
-                'id' => 1,
-                'status' => '承認待ち',
-                'name' => '西 伶奈',
-                'target_date' => '2023/06/01',
-                'reason' => '遅延のため',
-                'applied_at' => '2023/06/02'
-            ],
-            [
-                'id' => 2,
-                'status' => '承認待ち',
-                'name' => '山田 太郎',
-                'target_date' => '2023/06/01',
-                'reason' => '遅延のため',
-                'applied_at' => '2023/08/02'
-            ],
-            [
-                'id' => 3,
-                'status' => '承認待ち',
-                'name' => '山田 花子',
-                'target_date' => '2023/06/02',
-                'reason' => '遅延のため',
-                'applied_at' => '2023/07/02'
-            ],
-        ];
+        $pending = AttendanceCorrectionRequest::with('user')
+            ->where('status', 'pending')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'status' => '承認待ち',
+                    'name' => $item->user->name ?? '未設定',
+                    'target_date' => $item->target_date->format('Y/m/d'),
+                    'reason' => $item->reason,
+                    'applied_at' => $item->applied_at->format('Y/m/d'),
+                ];
+            });
 
-        $approved = [
-            [
-                'id' => 4,
-                'status' => '承認済み',
-                'name' => '佐藤 花',
-                'target_date' => '2023/06/05',
-                'reason' => '記録忘れのため',
-                'applied_at' => '2023/06/06'
-            ],
-        ];
+        $approved = AttendanceCorrectionRequest::with('user')
+            ->where('status', 'approved')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'status' => '承認済み',
+                    'name' => $item->user->name ?? '未設定',
+                    'target_date' => $item->target_date->format('Y/m/d'),
+                    'reason' => $item->reason,
+                    'applied_at' => $item->applied_at->format('Y/m/d'),
+                ];
+            });
 
-        return view('admin.stamp_correction_request.index', [
-            'status' => $status,
-            'pending' => $pending,
-            'approved' => $approved
-        ]);
+        return view('admin.stamp_correction_request.index', compact('status', 'pending', 'approved'));
     }
 
     // 修正申請承認・詳細画面（管理者）
     public function show($id)
     {
-        // セッションに更新データがあるか確認
-    $updated = session("attendance_update.{$id}");
+        // 修正申請データを取得
+        $request = AttendanceCorrectionRequest::with(['user', 'breakCorrections'])->findOrFail($id);
 
-    if ($updated) {
-        $detail = $updated;
-    } else {
-        // 仮のデフォルトデータ
-        $requests = [
-            1 => [
-                'id' => 1,
-                'name' => '西 伶奈',
-                'date' => '2023年6月1日',
-                'start_time' => '09:00',
-                'end_time' => '18:00',
-                'break1_start' => '12:00',
-                'break1_end' => '13:00',
-                'break2_start' => null,
-                'break2_end' => null,
-                'note' => '電車遅延のため',
-            ],
-            2 => [
-                'id' => 2,
-                'name' => '山田 太郎',
-                'date' => '2023年6月1日',
-                'start_time' => '10:00',
-                'end_time' => '19:00',
-                'break1_start' => '13:00',
-                'break1_end' => '14:00',
-                'break2_start' => null,
-                'break2_end' => null,
-                'note' => '寝坊のため',
-            ],
+        // 表示用データ整形
+        $detail = [
+            'id' => $request->id,
+            'name' => $request->user->name,
+            'date' => Carbon::parse($request->target_date)->format('Y年n月j日'),
+            'clock_in' => optional($request->start_time)->format('H:i'),
+            'clock_out' => optional($request->end_time)->format('H:i'),
+            'note' => $request->reason,
+            'status' => $request->status,
+            'breaks' => $request->breakCorrections->map(function ($break) {
+                return [
+                    'start' => optional($break->break_start)->format('H:i'),
+                    'end'   => optional($break->break_end)->format('H:i'),
+                ];
+            })->toArray(),
         ];
 
-        if (!isset($requests[$id])) {
-            abort(404, '申請が見つかりません');
-        }
-
-        $detail = $requests[$id];
-        $isApproved = session("approved_ids.{$id}", false);
-        $detail['status'] = $isApproved ? 'approved' : 'pending';
-    }
-
+        // break1, break2 のフォーマット保証（最大2件までに調整）
+        $detail['breaks'] = array_pad($detail['breaks'], 2, ['start' => null, 'end' => null]);
 
         return view('admin.approval.show', compact('detail'));
     }
 
-    // 承認処理
+    // 承認処理（ステータス更新）
     public function approve(Request $request, $id)
     {
-        // 本番環境で解除する
-        // $detail = AttendanceCorrectionRequest::findOrFail($id);
-        // $detail->status = 'approved';
-        // $detail->save();
+        $correction = AttendanceCorrectionRequest::findOrFail($id);
 
-        // セッションで承認状態を保存
-        session()->put("approved_ids.{$id}", true);
+        if ($correction->status === 'approved') {
+            return redirect()->route('admin.approval.show', $id)
+                ->with('message', 'すでに承認済みです。');
+        }
 
-        // 今回は確認用として一旦リダイレクト
-        return redirect()->route('admin.approval.show', $id)->with('success', '承認しました');
+        $correction->status = 'approved';
+        $correction->save();
+
+        return redirect()->route('admin.approval.show', $id)
+            ->with('success', '修正申請を承認しました。');
     }
 }

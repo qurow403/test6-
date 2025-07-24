@@ -62,4 +62,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->role === 'admin' || $this->admin === true;
     }
+
+    // ApprovalRequestsとのリレーション（1対多）
+    public function AttendanceCorrectionRequests()
+    {
+        return $this->hasMany(AttendanceCorrectionRequest::class);
+    }
 }
