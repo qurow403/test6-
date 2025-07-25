@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 // モデル・日時情報追加
 use App\Models\User;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 
 class AttendanceCorrectionRequestFactory extends Factory
 {
@@ -17,11 +17,13 @@ class AttendanceCorrectionRequestFactory extends Factory
      */
     public function definition()
     {
+        $user = User::inRandomOrder()->first();
+
         return [
-            'user_id' => User::inRandomOrder()->first()?->id ?? User::factory(),
+            'user_id' => $user ? $user->id : User::factory(),
             'target_date' => Carbon::today()->subDays(rand(1, 10)),
-            'reason' => fake()->randomElement(['遅延のため', '記録忘れのため']),
-            'status' => fake()->randomElement(['pending', 'approved']),
+            'reason' => $this->faker->randomElement(['遅延のため', '記録忘れのため']),
+            'status' => $this->faker->randomElement(['pending', 'approved']),
             'applied_at' => Carbon::now()->subDays(rand(0, 5)),
         ];
     }

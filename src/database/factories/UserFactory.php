@@ -5,6 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
+// 追加
+use Illuminate\Support\Facades\Hash;
+
 class UserFactory extends Factory
 {
     /**

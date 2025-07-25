@@ -9,6 +9,9 @@ class BreakTime extends Model
 {
     use HasFactory;
 
+    // ★ テーブル名を明示的に指定
+    protected $table = 'breaks';
+
     protected $fillable = [
         'attendance_id',
         'break_start',
