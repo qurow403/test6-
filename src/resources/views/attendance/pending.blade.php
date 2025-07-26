@@ -12,7 +12,7 @@
 
     <div class="form-group">
         <label>名前</label>
-        <p>{{ $attendance->user_name }}</p>
+        <p>{{ $attendance->user->name ?? '―' }}</p>
     </div>
 
     <div class="form-group">
@@ -31,7 +31,7 @@
         <label>休憩時間:</label>
         @forelse ($attendance->breaks as $index => $break)
             <p>
-                休憩{{ $index + 1 }}：{{ $break['start'] ?? '-' }} ～ {{ $break['end'] ?? '-' }}
+                休憩{{ $index + 1 }}：{{ $break->break_start ?? '-' }} ～ {{ $break->break_end ?? '-' }}
             </p>
         @empty
             <p>休憩なし</p>
@@ -40,7 +40,7 @@
 
     <div class="form-group">
         <label>備考:</label>
-        <p>{{ $attendance->note ?? 'なし' }}</p>
+        <p>{{ $attendance->note !== null && $attendance->note !== '' ? $attendance->note : 'なし' }}</p>
     </div>
 
     <div class="form-group">

@@ -71,19 +71,10 @@
                         @endif
                     </td>
 
-                    <!-- {{-- ★ 合計 → 出勤〜退勤から休憩時間を引く --}} -->
-                    <td class="border px-4 py-2">
-                        @if ($attendance->clock_in && $attendance->clock_out)
-                            {{ \Carbon\Carbon::parse($attendance->clock_out)->diff(\Carbon\Carbon::parse($attendance->clock_in))->format('%H:%I') }}
-                        @else
-                            ー
-                        @endif
-                    </td>
-
-                    <!-- {{-- ★ 詳細リンクだけに修正 --}} -->
                     <td class="border px-4 py-2">
                         <a href="{{ route('attendance.show', $attendance->id) }}" class="text-blue-500 hover:underline">詳細</a>
                     </td>
+
                 </tr>
             @empty
                 <tr>

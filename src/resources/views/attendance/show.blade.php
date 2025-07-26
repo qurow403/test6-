@@ -27,7 +27,7 @@
         <table class="table">
             <tr>
                 <th>名前</th>
-                <td>{{ $attendance->user_name }}</td>
+                <td>{{ $attendance->user->name ?? '―' }}</td>
             </tr>
             <tr>
                 <th>日付</th>
@@ -36,25 +36,29 @@
             <tr>
                 <th>出勤・退勤</th>
                 <td>
-                    <input type="time" name="clock_in" value="{{ old('clock_in', $attendance->clock_in) }}">
+                    <input type="time" name="clock_in" value="{{ old('clock_in', $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : '') }}">
                     〜
-                    <input type="time" name="clock_out" value="{{ old('clock_out', $attendance->clock_out) }}">
+                    <input type="time" name="clock_out" value="{{ old('clock_out', $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : '') }}">
                 </td>
             </tr>
             <tr>
                 <th>休憩</th>
                 <td>
-                    <input type="time" name="breaks[0][start]" value="{{ old('breaks.0.start', $attendance->breaks[0]['start'] ?? '') }}">
+                    <input type="time" name="breaks[0][start]"
+                        value="{{ old('breaks.0.start', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_start ? \Carbon\Carbon::parse($attendance->breaks[0]->break_start)->format('H:i') : '') }}">
                     〜
-                    <input type="time" name="breaks[0][end]" value="{{ old('breaks.0.end', $attendance->breaks[0]['end'] ?? '') }}">
+                    <input type="time" name="breaks[0][end]"
+                        value="{{ old('breaks.0.end', isset($attendance->breaks[0]) && $attendance->breaks[0]->break_end ? \Carbon\Carbon::parse($attendance->breaks[0]->break_end)->format('H:i') : '') }}">
                 </td>
             </tr>
             <tr>
                 <th>休憩2</th>
                 <td>
-                    <input type="time" name="breaks[1][start]" value="{{ old('breaks.1.start', $attendance->breaks[1]['start'] ?? '') }}">
+                    <input type="time" name="breaks[1][start]"
+                        value="{{ old('breaks.1.start', isset($attendance->breaks[1]) && $attendance->breaks[1]->break_start ? \Carbon\Carbon::parse($attendance->breaks[1]->break_start)->format('H:i') : '') }}">
                     〜
-                    <input type="time" name="breaks[1][end]" value="{{ old('breaks.1.end', $attendance->breaks[1]['end'] ?? '') }}">
+                    <input type="time" name="breaks[1][end]"
+                        value="{{ old('breaks.1.end', isset($attendance->breaks[1]) && $attendance->breaks[1]->break_end ? \Carbon\Carbon::parse($attendance->breaks[1]->break_end)->format('H:i') : '') }}">
                 </td>
             </tr>
             <tr>

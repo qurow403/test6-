@@ -23,4 +23,9 @@ class BreakTime extends Model
     {
         return $this->belongsTo(Attendance::class);
     }
+
+    public function breaks()
+    {
+        return $this->hasMany(BreakTime::class);
+    }
 }

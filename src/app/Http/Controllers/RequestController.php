@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+
 // 時間表記で追加
 use Illuminate\Support\Carbon;
 
 // ApprovalRequest(承認申請)モデル追加
-use App\Models\ApprovalRequest;
+use App\Models\approvalRequest;
 
 class RequestController extends Controller
 {
@@ -17,15 +19,17 @@ class RequestController extends Controller
     {
         $status = $request->query('status', 'pending'); // デフォルト: pending
 
-        // 現在のログインユーザーの申請のみ取得（最新順）
-        $requests = ApprovalRequest::with(['user', 'attendance'])
-            ->where('user_id', Auth::id())
+        // attendances 経由で user_id を指定
+        $requests = ApprovalRequest::whereHas('attendance', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
             ->where('status', $status)
+            ->with('attendance') // attendancesも一緒に取得
             ->orderByDesc('created_at')
             ->get();
 
-        return view('requests.index', [
-            'requests' => $requests,
-        ]);
-    }
+            return view('requests.index', [
+                'requests' => $requests,
+            ]);
+        }
 }

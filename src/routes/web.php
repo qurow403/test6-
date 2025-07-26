@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // コントローラー
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\Auth\VerifyEmailCheckController;
 use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\Admin\RequestController as AdminRequestController;
@@ -43,6 +44,10 @@ Route::middleware('auth', 'verified')->group(function () {
     // 修正申請一覧（共通）
     Route::get('/stamp_correction_request/list', [RequestController::class, 'index'])->name('requests.index');
 });
+
+Route::get('/email/verify-check', [VerifyEmailCheckController::class, 'check'])
+    ->middleware('auth')
+    ->name('verification.verify-check');
 
 //-------------------------------------------
 // 管理者向けルート

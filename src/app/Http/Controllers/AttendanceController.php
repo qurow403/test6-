@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Attendance\UpdateAttendanceRequest;
 
 // フォームリクエスト追加
-use App\Http\Requests\AttendanceActionRequest;
+use App\Http\Requests\Attendance\AttendanceActionRequest;
 
 // Attendance・Break(Time)モデル・時間追加
 use App\Models\Attendance;
@@ -233,12 +233,28 @@ class AttendanceController extends Controller
         // 該当勤怠データを取得（userも取得して名前参照）
         $attendance = Attendance::with('user')->findOrFail($id);
 
-        // 必要に応じて名前・日付などをログに含める（これはログ用の補足）
-        $validated['user_name'] = $attendance->user->name ?? '不明';
-        $validated['date'] = $attendance->date;
+        // 勤怠情報を更新して「承認待ち」にする
+        $attendance->update([
+            'clock_in' => $validated['clock_in'],
+            'clock_out' => $validated['clock_out'],
+            'note' => $validated['note'],
+            'request_status' => Attendance::STATUS_PENDING,
+        ]);
 
-        // ログ出力（送信確認用）
-        logger()->info("修正申請内容", $validated);
+        // 既存のBreakTimeを削除（初期化）
+        $attendance->breaks()->delete();
+
+        // 新しく送られてきたbreaks配列から再登録
+        if ($request->has('breaks')) {
+            foreach ($request->input('breaks') as $breakData) {
+                if (!empty($breakData['start']) && !empty($breakData['end'])) {
+                    $attendance->breaks()->create([
+                        'break_start' => $breakData['start'],
+                        'break_end' => $breakData['end'],
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('attendance.pending', $id)
             ->with('success', '修正申請を送信しました（承認待ち）')
@@ -252,25 +268,8 @@ class AttendanceController extends Controller
         $attendance = Attendance::with(['breaks', 'user'])
             ->where('id', $id)
             ->where('user_id', Auth::id())
-            ->where('status', Attendance::STATUS_PENDING) // 定数がない場合は直接 'pending'
+            ->where('request_status', Attendance::STATUS_PENDING)
             ->firstOrFail();
-
-        // 表示用にフォーマットを整える
-        $formattedAttendance = (object)[
-            'id' => $attendance->id,
-            'user_name' => $attendance->user->name,
-            'date' => Carbon::parse($attendance->date)->format('Y年n月j日'),
-            'clock_in' => $attendance->clock_in,
-            'clock_out' => $attendance->clock_out,
-            'breaks' => $attendance->breaks->map(function ($break) {
-                return [
-                    'start' => $break->start,
-                    'end' => $break->end,
-                ];
-            }),
-            'note' => $attendance->note,
-            'message' => '✳︎承認待ちのため修正できません。',
-        ];
 
         return view('attendance.pending', compact('attendance', 'id'));
     }

@@ -14,7 +14,7 @@
     </p>
 
     <div class="verify-button">
-        <a href="/" class="btn">認証はこちらから</a>
+        <a href="{{ route('verification.verify-check') }}" class="btn">認証はこちらから</a>
     </div>
 
     <div class="resend-link">
