@@ -28,8 +28,10 @@ Laravel 8.83.29
 MySQL 15.1
 
 
-・ER図
-以下は本アプリケーションのエンティティ・リレーション図です。
+## ER図
+![ER図](docs/er_diagram.png)
+
+[→ dbdiagram.io で開く（編集・拡大表示・編集可）](https://dbdiagram.io/d/683bdd30bd74709cb77f7db5)
 
 
 
