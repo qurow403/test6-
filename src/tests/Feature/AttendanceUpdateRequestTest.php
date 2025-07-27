@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
+use App\Http\Requests\Admin\Attendance\UpdateAttendanceRequest;
+
 class AttendanceUpdateRequestTest extends TestCase
 {
     /**

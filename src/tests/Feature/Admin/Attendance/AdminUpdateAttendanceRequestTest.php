@@ -103,4 +103,37 @@ class AdminUpdateAttendanceRequestTest extends TestCase
         $this->assertArrayHasKey('breaks.0.start', $validator->errors()->toArray());
         $this->assertArrayHasKey('breaks.1.end', $validator->errors()->toArray());
     }
+
+    protected function getValidator(array $data)
+    {
+        $request = new AdminUpdateAttendanceRequest();
+
+        return Validator::make($data, $request->rules(), $request->messages());
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $clockIn = $this->input('clock_in');
+            $clockOut = $this->input('clock_out');
+            $breaks = $this->input('breaks', []);
+
+            if ($clockIn && $clockOut && $clockIn >= $clockOut) {
+                $validator->errors()->add('clock_out', '出勤時間より退勤時間が後である必要があります。');
+            }
+
+            foreach ($breaks as $index => $break) {
+                $start = $break['start'] ?? null;
+                $end = $break['end'] ?? null;
+
+                if ($start && $clockIn && $start < $clockIn) {
+                    $validator->errors()->add("breaks.$index.start", '休憩開始が出勤時間より前です。');
+                }
+
+                if ($end && $clockOut && $end > $clockOut) {
+                    $validator->errors()->add("breaks.$index.end", '休憩終了が退勤時間より後です。');
+                }
+            }
+        });
+    }
 }
