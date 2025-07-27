@@ -30,19 +30,19 @@
             </tr>
         </thead>
         <tbody>
-            @forelse($attendances as $attendance)
-            <tr>
-                <td>
-                    @php
-                        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-                        $w = $attendance->date->dayOfWeek;
-                    @endphp
-                    {{ $attendance->date->format('m/d') }} ({{ $weekdays[$w] }})
-                </td>
-                <td>{{ $attendance->clock_in ?? 'ー' }}</td>
-                <td>{{ $attendance->clock_out ?? 'ー' }}</td>
-                <td>{{ $attendance->break_time ?? 'ー' }}</td>
-                <td>{{ $attendance->total_time ?? 'ー' }}</td>
+        @forelse($attendances as $attendance)
+                @php
+                    $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+                    $w = $attendance->date->dayOfWeek;
+                @endphp
+
+                <tr>
+                    <td>{{ $attendance->date->format('m/d') }} ({{ $weekdays[$w] }})</td>
+                    <td>{{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : 'ー' }}</td>
+                    <td>{{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : 'ー' }}</td>
+                    <td>{{ $attendance->break_time ?? '0:00' }}</td>
+                    <td>{{ $attendance->total_time ?? '0:00' }}</td>
+
                 <td>
                     @if ($attendance->id)
                         <a href="{{ route('admin.attendance.show', ['id' => $attendance->id]) }}">詳細</a>

@@ -29,12 +29,42 @@
         </thead>
         <tbody>
             @foreach($attendances as $attendance)
+                @php
+                    // 休憩時間の合計（分）
+                    $breakMinutes = $attendance->breaks->sum(function ($break) {
+                        return ($break->break_start && $break->break_end)
+                            ? \Carbon\Carbon::parse($break->break_end)->diffInMinutes($break->break_start): 0;
+                    });
+
+                    // 労働時間（出勤〜退勤 - 休憩）
+                    $workedMinutes = ($attendance->clock_in && $attendance->clock_out)
+                        ? \Carbon\Carbon::parse($attendance->clock_in)->diffInMinutes($attendance->clock_out) - $breakMinutes: null;
+                @endphp
+
                 <tr>
                     <td>{{ $attendance->user->name }}</td>
-                    <td>{{ optional($attendance->clock_in)->format('H:i') }}</td>
-                    <td>{{ optional($attendance->clock_out)->format('H:i') }}</td>
-                    <td>{{ $attendance->break_duration ?? '0:00' }}</td>
-                    <td>{{ $attendance->worked_duration ?? '0:00' }}</td>
+
+                    <!-- {{-- 出勤 --}} -->
+                    <td>
+                        {{ $attendance->clock_in ? \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') : '-' }}
+                    </td>
+
+                    <!-- {{-- 退勤 --}} -->
+                    <td>
+                        {{ $attendance->clock_out ? \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') : '-' }}
+                    </td>
+
+                    <!-- {{-- 休憩 --}} -->
+                    <td>
+                        {{ $breakMinutes ? floor($breakMinutes / 60) . ':' . str_pad($breakMinutes % 60, 2, '0', STR_PAD_LEFT) : '0:00' }}
+                    </td>
+
+                    <!-- {{-- 合計 --}} -->
+                    <td>
+                        {{ $workedMinutes !== null
+                        ? floor($workedMinutes / 60) . ':' . str_pad($workedMinutes % 60, 2, '0', STR_PAD_LEFT): '0:00' }}
+                    </td>
+
                     <td><a href="{{ route('admin.attendance.show', $attendance->id) }}">詳細</a></td>
                 </tr>
             @endforeach

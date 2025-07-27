@@ -57,10 +57,14 @@ class StaffAttendanceController extends Controller
                 $attendances[] = (object)[
                     'id' => $record->id,
                     'date' => $carbonDate,
-                    'clock_in' => optional($record->clock_in)->format('H:i') ?? '',
-                    'clock_out' => optional($record->clock_out)->format('H:i') ?? '',
+                    'clock_in' => $record->clock_in,
+                    'clock_out' => $record->clock_out,
                     'break_time' => $this->formatMinutes($breakMinutes),
-                    'total_time' => $this->formatMinutes($record->worked_minutes),
+                    'total_time' => $this->formatMinutes(
+                        ($record->clock_in && $record->clock_out)
+                            ? Carbon::parse($record->clock_in)->diffInMinutes($record->clock_out) - $breakMinutes
+                            : null
+                    ),
                 ];
             } else {
                 // 該当日が記録されていない

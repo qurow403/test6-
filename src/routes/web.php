@@ -74,6 +74,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('attendance/staff/{id}', [StaffAttendanceController::class, 'index'])->name('staff_attendance.index');
         Route::get('staff/attendance/{id}/csv', [StaffAttendanceController::class, 'exportCsv'])->name('staff_attendance.csv');
 
+        // 申請一覧
+        Route::get('stamp_correction_request/list', [RequestController::class, 'index'])->name('stamp_correction_request.index');
+
+
         // 修正申請承認
         Route::get('stamp_correction_request/approve/{attendance_correct_request}', [AdminRequestController::class, 'show'])->name('approval.show');
         Route::post('stamp_correction_request/approve/{attendance_correct_request}', [AdminRequestController::class, 'approve'])->name('approval.approve');
