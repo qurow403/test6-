@@ -29,7 +29,7 @@ MySQL 15.1
 
 
 ## ER図
-![ER図](docs/er_diagram.png)
+![ER図](src/docs/er_diagram.png)
 
 [→ dbdiagram.io で開く（編集・拡大表示・編集可）](https://dbdiagram.io/d/683bdd30bd74709cb77f7db5)
 
