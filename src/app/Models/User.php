@@ -53,7 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     // ApprovalRequestsとのリレーション（1対多）
-    public function ApprovalRequests()
+    public function approvalRequests()
     {
         return $this->hasMany(approvalRequest::class);
     }

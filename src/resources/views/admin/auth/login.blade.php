@@ -46,6 +46,7 @@
 
             <div class="login-form__group">
             <button type="submit" class="form-control">管理者ログインする</button>
+            </div>
         </form>
     </div>
 @endsection

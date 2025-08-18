@@ -43,14 +43,14 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::with('breaks')->findOrFail($id);
 
+        // 勤怠情報更新
         $attendance->clock_in = $request->input('clock_in');
         $attendance->clock_out = $request->input('clock_out');
         $attendance->note = $request->input('note');
         $attendance->save();
 
-        // 既存の休憩削除 → 入力に基づき再登録
+        // 既存休憩を削除して再登録
         $attendance->breaks()->delete();
-
         foreach ($request->input('breaks', []) as $break) {
             if (!empty($break['start']) || !empty($break['end'])) {
                 $attendance->breaks()->create([
@@ -60,6 +60,9 @@ class AttendanceController extends Controller
             }
         }
 
-        return redirect()->route('admin.approval.show', $id)->with('success', '勤怠情報を更新しました');
+        // 修正後に詳細画面へ戻し、成功メッセージを表示
+        return redirect()
+            ->route('admin.attendance.show', $id)
+            ->with('success', '勤怠情報を更新しました');
     }
 }

@@ -10,6 +10,14 @@
 <div class="container py-5">
     <h2 class="mb-4">勤怠詳細</h2>
 
+    {{-- 成功メッセージ --}}
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- エラーメッセージ --}}
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -32,8 +40,7 @@
             <tr>
                 <th>日付</th>
                 <td colspan="2">
-                    {{ \Carbon\Carbon::parse($attendance->date)->format('Y年') }}
-                    {{ \Carbon\Carbon::parse($attendance->date)->format('n月j日') }}
+                    {{ \Carbon\Carbon::parse($attendance->date)->format('Y年n月j日') }}
                 </td>
             </tr>
             <tr>

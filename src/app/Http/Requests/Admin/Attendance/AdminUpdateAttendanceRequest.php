@@ -28,9 +28,9 @@ class AdminUpdateAttendanceRequest extends FormRequest
     {
         return [
             'clock_in' => 'required|date_format:H:i',
-            'clock_out' => 'required|date_format:H:i',
-            'breaks.*.start' => 'nullable|date_format:H:i',
-            'breaks.*.end' => 'nullable|date_format:H:i',
+            'clock_out' => 'required|date_format:H:i|after:clock_in',
+            'breaks.*.start' => 'nullable|date_format:H:i|before_or_equal:clock_out|after_or_equal:clock_in',
+            'breaks.*.end' => 'nullable|date_format:H:i|before_or_equal:clock_out|after_or_equal:clock_in',
             'note' => 'required|string',
         ];
     }
@@ -63,7 +63,7 @@ class AdminUpdateAttendanceRequest extends FormRequest
 
             // 出勤 >= 退勤 ならエラー
             if ($clockInTime->gte($clockOutTime)) {
-                $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
+                $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です.');
             }
 
             // 休憩時間チェック
@@ -80,7 +80,7 @@ class AdminUpdateAttendanceRequest extends FormRequest
                     try {
                         $startTime = Carbon::createFromFormat('H:i', $start);
                         if ($startTime->lt($clockInTime) || $startTime->gt($clockOutTime)) {
-                            $validator->errors()->add("breaks.$index.start", '休憩時間が不適切な値です');
+                            $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です。');
                         }
                     } catch (\Exception $e) {
                         // 無視
@@ -91,7 +91,7 @@ class AdminUpdateAttendanceRequest extends FormRequest
                     try {
                         $endTime = Carbon::createFromFormat('H:i', $end);
                         if ($endTime->lt($clockInTime) || $endTime->gt($clockOutTime)) {
-                            $validator->errors()->add("breaks.$index.end", '休憩時間が不適切な値です');
+                            $validator->errors()->add("breaks.$index.end", '休憩時間が勤務時間外です。');
                         }
                     } catch (\Exception $e) {
                         // 無視

@@ -31,9 +31,7 @@ class LoginController extends Controller
         }
 
         // ログイン失敗時のエラーメッセージ
-        return back()->withErrors([
-            'email' => 'ログイン情報が登録されていません',
-        ])->withInput();
+        return back()->with('error', 'ログイン情報が登録されていません')->withInput();
     }
 
     // ログアウト処理

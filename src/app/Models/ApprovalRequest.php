@@ -9,6 +9,19 @@ class approvalRequest extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'attendance_id',
+        'clock_in',
+        'clock_out',
+        'breaks',
+        'status',
+        'note',
+    ];
+
+    protected $casts = [
+        'breaks' => 'array',
+    ];
+
     // userとのリレーション(多対１)
     public function user()
     {

@@ -95,18 +95,19 @@ class StaffAttendanceController extends Controller
             ->where('user_id', $id)
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->get()
-            ->keyBy('date');
+            ->keyBy(fn($a) => Carbon::parse($a->date)->toDateString());
 
         $daysInMonth = $date->daysInMonth;
         $csvData = [];
 
         for ($i = 1; $i <= $daysInMonth; $i++) {
-            $currentDate = $date->copy()->day($i)->toDateString();
             $carbonDate = $date->copy()->day($i);
+            $currentDateStr = $carbonDate->toDateString();
 
-            if ($attendanceRecords->has($currentDate)) {
-                $record = $attendanceRecords[$currentDate];
+            if ($attendanceRecords->has($currentDateStr)) {
+                $record = $attendanceRecords[$currentDateStr];
 
+                // 休憩合計（分）
                 $breakMinutes = $record->breaks->reduce(function ($carry, $break) {
                     if ($break->break_start && $break->break_end) {
                         $start = Carbon::parse($break->break_start);
@@ -116,12 +117,17 @@ class StaffAttendanceController extends Controller
                     return $carry;
                 }, 0);
 
+                // 勤務合計（分）
+                $totalMinutes = ($record->clock_in && $record->clock_out)
+                    ? Carbon::parse($record->clock_in)->diffInMinutes(Carbon::parse($record->clock_out)) - $breakMinutes
+                    : null;
+
                 $csvData[] = [
                     '日付' => $carbonDate->format('Y-m-d'),
-                    '出勤' => optional($record->clock_in)->format('H:i') ?? '',
-                    '退勤' => optional($record->clock_out)->format('H:i') ?? '',
+                    '出勤' => $record->clock_in ? Carbon::parse($record->clock_in)->format('H:i') : '',
+                    '退勤' => $record->clock_out ? Carbon::parse($record->clock_out)->format('H:i') : '',
                     '休憩' => $this->formatMinutes($breakMinutes),
-                    '合計' => $this->formatMinutes($record->worked_minutes),
+                    '合計' => $this->formatMinutes($totalMinutes),
                 ];
             } else {
                 $csvData[] = [
@@ -137,15 +143,16 @@ class StaffAttendanceController extends Controller
         $fileName = "attendance_{$user->id}_{$date->format('Y_m')}.csv";
 
         $headers = [
-            "Content-Type" => "text/csv",
+            "Content-Type" => "text/csv; charset=Shift_JIS",
             "Content-Disposition" => "attachment; filename=\"$fileName\"",
         ];
 
         $callback = function () use ($csvData) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, array_keys($csvData[0]));
+            // 文字コード変換して書き込み
+            fputcsv($file, mb_convert_encoding(array_keys($csvData[0]), 'SJIS-win', 'UTF-8'));
             foreach ($csvData as $row) {
-                fputcsv($file, $row);
+                fputcsv($file, mb_convert_encoding($row, 'SJIS-win', 'UTF-8'));
             }
             fclose($file);
         };

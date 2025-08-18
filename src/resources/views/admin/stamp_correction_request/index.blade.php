@@ -10,6 +10,9 @@
     <h2>申請一覧</h2>
 
     {{-- タブ切り替え --}}
+    @php
+        $currentStatus = request('status', 'pending'); // デフォルトpending
+    @endphp
     <ul class="nav nav-tabs mb-3">
         <li class="nav-item">
             <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
@@ -37,14 +40,18 @@
             </tr>
         </thead>
         <tbody>
-            @forelse(($status === 'approved' ? $approved : $pending) as $item)
+            @php
+                $displayItems = $currentStatus === 'approved' ? $approved : $pending;
+            @endphp
+
+            @forelse($displayItems as $item)
             <tr>
                 <td>{{ $item['status'] }}</td>
                 <td>{{ $item['name'] }}</td>
                 <td>{{ $item['target_date'] }}</td>
                 <td>{{ $item['reason'] }}</td>
                 <td>{{ $item['applied_at'] }}</td>
-                <td><a href="{{ route('admin.approvals.show', $item['id']) }}">詳細</a></td>
+                <td><a href="{{ route('admin.approval.show', $item['id']) }}">詳細</a></td>
             </tr>
             @empty
             <tr>

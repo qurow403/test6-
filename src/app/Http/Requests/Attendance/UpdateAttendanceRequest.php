@@ -79,7 +79,7 @@ class UpdateAttendanceRequest extends FormRequest
 
                 // 休憩終了時間が退勤後
                 if ($end && $clockOut && $end > $clockOut) {
-                    $validator->errors()->add('clock_out', '出勤時間もしくは退勤時間が不適切な値です');
+                    $validator->errors()->add("breaks.$index.end", '休憩時間が不適切な値です');
                 }
 
                 // 休憩開始時間が勤務時間外
@@ -89,7 +89,7 @@ class UpdateAttendanceRequest extends FormRequest
 
                 // 休憩終了時間が勤務時間外
                 if ($end && $clockIn && $end < $clockIn) {
-                    $validator->errors()->add("breaks.$index.end", '出勤時間もしくは退勤時間が不適切な値です');
+                    $validator->errors()->add("breaks.$index.end", '休憩時間が不適切な値です');
                 }
 
                 // 休憩開始 ≥ 終了

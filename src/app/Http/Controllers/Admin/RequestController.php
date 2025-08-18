@@ -44,7 +44,11 @@ class RequestController extends Controller
                 ];
             });
 
-        return view('admin.stamp_correction_request.index', compact('status', 'pending', 'approved'));
+        return view('admin.stamp_correction_request.index', [
+            'currentStatus' => $status,
+            'pending' => $pending,
+            'approved' => $approved,
+        ]);
     }
 
     // 修正申請承認・詳細画面（管理者）
@@ -58,8 +62,8 @@ class RequestController extends Controller
             'id' => $request->id,
             'name' => $request->user->name,
             'date' => Carbon::parse($request->target_date)->format('Y年n月j日'),
-            'clock_in' => optional($request->start_time)->format('H:i'),
-            'clock_out' => optional($request->end_time)->format('H:i'),
+            'clock_in' => $request->clock_in ? Carbon::parse($request->target_date.' '.$request->clock_in)->format('H:i') : null,
+            'clock_out' => $request->clock_out ? Carbon::parse($request->target_date.' '.$request->clock_out)->format('H:i') : null,
             'note' => $request->reason,
             'status' => $request->status,
             'breaks' => $request->breakCorrections->map(function ($break) {
@@ -85,6 +89,49 @@ class RequestController extends Controller
             return redirect()->route('admin.approval.show', $id)
                 ->with('message', 'すでに承認済みです。');
         }
+
+        // 対象日の勤怠データを取得（無ければ新規作成）
+        $attendance = \App\Models\Attendance::firstOrCreate(
+            [
+                'user_id' => $correction->user_id,
+                'date'    => $correction->target_date,
+            ]
+        );
+
+        // 出勤・退勤時間を更新（修正申請のデータを反映）
+        if ($correction->clock_in) {
+            $attendance->clock_in = Carbon::parse($correction->target_date . ' ' . $correction->clock_in);
+        }
+        if ($correction->clock_out) {
+            $attendance->clock_out = Carbon::parse($correction->target_date . ' ' . $correction->clock_out);
+        }
+
+        // --- 休憩時間の反映処理 ---
+        $approval = \App\Models\ApprovalRequest::where('attendance_id', $attendance->id)->first();
+
+        if ($approval && $approval->breaks) {
+            $breaks = json_decode($approval->breaks, true);
+            $totalBreakMinutes = 0;
+
+            foreach ($breaks as $break) {
+                if (!empty($break['start']) && !empty($break['end'])) {
+                    $start = Carbon::parse($correction->target_date . ' ' . $break['start']);
+                    $end   = Carbon::parse($correction->target_date . ' ' . $break['end']);
+                    $totalBreakMinutes += $start->diffInMinutes($end);
+                }
+            }
+
+            $attendance->break_duration = $totalBreakMinutes;
+        }
+
+        // 実働時間の再計算
+        if ($attendance->clock_in && $attendance->clock_out) {
+            $attendance->worked_minutes =
+                $attendance->clock_in->diffInMinutes($attendance->clock_out)
+                - ($attendance->break_duration ?? 0);
+        }
+
+        $attendance->save();
 
         $correction->status = 'approved';
         $correction->save();
