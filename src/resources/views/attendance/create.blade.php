@@ -1,48 +1,55 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/create.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/attendance/create.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '勤怠登録画面(一般ユーザー)')
 
 @section('content')
-<div class="container text-center py-5">
-    <p class="status-label">
+<div class="container">
+    <p class="status-label {{ $status }}">
         @switch($status)
             @case('before')
-                <span class="badge bg-secondary">勤務外</span>
+                勤務外
                 @break
             @case('working')
-                <span class="badge bg-primary">出勤中</span>
+                出勤中
                 @break
             @case('on_break')
-                <span class="badge bg-warning">休憩中</span>
+                休憩中
                 @break
             @case('finished')
-                <span class="badge bg-success">退勤済み</span>
+                退勤済み
                 @break
         @endswitch
     </p>
 
-    <h2>{{ $now->format('Y年n月j日 (D)') }}</h2>
-    <h1>{{ $now->format('H:i') }}</h1>
+    @php
+        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+        $weekday = $weekdays[$now->dayOfWeek]; // Carbonの日番号(0=日曜～6=土曜)
+    @endphp
+
+    <h2 class="date-label">
+        {{ $now->format('Y年n月j日') }} ({{ $weekday }})
+    </h2>
+    <h1 class="time-label">{{ $now->format('H:i') }}</h1>
 
     <form method="POST" action="{{ route('attendance.action') }}">
         @csrf
         @switch($status)
             @case('before')
-                <button type="submit" name="action" value="clock_in" class="btn btn-dark mt-4 px-5">出勤</button>
+                <button type="submit" name="action" value="clock_in" class="btn-attendance">出勤</button>
                 @break
             @case('working')
-                <button type="submit" name="action" value="clock_out" class="btn btn-dark mt-4 me-2 px-4">退勤</button>
-                <button type="submit" name="action" value="break_in" class="btn btn-outline-dark mt-4 px-4">休憩入</button>
+                <button type="submit" name="action" value="clock_out" class="btn-attendance">退勤</button>
+                <button type="submit" name="action" value="break_in" class="btn-outline-attendance">休憩入</button>
                 @break
             @case('on_break')
-                <button type="submit" name="action" value="break_out" class="btn btn-outline-dark mt-4 px-4">休憩戻</button>
+                <button type="submit" name="action" value="break_out" class="btn-outline-attendance">休憩戻</button>
                 @break
             @case('finished')
-                <p class="mt-4 fs-4">お疲れ様でした。</p>
+                <p class="finish-message">お疲れ様でした。</p>
                 @break
         @endswitch
     </form>

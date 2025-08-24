@@ -1,0 +1,11 @@
+.auth-bg {
+    @apply bg-gray-100 min-h-screen flex items-center justify-center;
+}
+
+.auth-form {
+    @apply bg-white p-6 rounded shadow-md w-full max-w-md;
+}
+
+.auth-button {
+    @apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full;
+}

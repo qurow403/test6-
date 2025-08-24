@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/attendance/index.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '勤怠一覧画面(一般ユーザー)')
@@ -11,7 +11,7 @@
     <h2 class="text-xl font-bold mb-4">勤怠一覧</h2>
 
     <!-- {{-- 月の移動と表示 --}} -->
-    <div class="flex items-center justify-between mb-4">
+    <div class="relative flex items-center justify-center gap-x-6 mb-4">
         <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}" class="btn btn-secondary">前月</a>
         <h3 class="text-lg font-semibold">{{ \Carbon\Carbon::parse($currentMonth)->format('Y年n月') }}</h3>
         <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}" class="btn btn-secondary">翌月</a>

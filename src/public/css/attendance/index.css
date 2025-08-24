@@ -1,0 +1,100 @@
+/* ページ背景とフォント */
+body {
+    background-color: #f5f5f5;
+    /* 全体の薄いグレー背景 */
+    font-family: 'Inter', sans-serif;
+}
+
+/* container の余白調整（Tailwindのmx-auto相当） */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background: transparent;
+    /* 背景はbodyの色 */
+}
+
+.container .flex {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+/* カスタムボタン: 前月・翌月 */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-secondary {
+    background-color: #e5e7eb;
+    /* Tailwind bg-gray-200 相当 */
+    color: #111;
+}
+
+.btn-secondary:hover {
+    background-color: #d1d5db;
+    /* Tailwind hover:bg-gray-300 相当 */
+}
+
+/* テーブル */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Tailwind border-collapse */
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ヘッダー */
+thead tr {
+    background-color: #f3f4f6;
+    /* Tailwind bg-gray-100 */
+}
+
+th {
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+/* テーブル本体 */
+td {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #eee;
+}
+
+/* 偶数行に色付け */
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* 詳細リンク */
+td a {
+    color: #3b82f6;
+    /* Tailwind text-blue-500 */
+    font-weight: 500;
+    text-decoration: none;
+}
+
+td a:hover {
+    text-decoration: underline;
+}
+
+/* 空データ時 */
+td[colspan="6"] {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-weight: 600;
+}

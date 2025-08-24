@@ -1,0 +1,53 @@
+.register-form__content {
+    margin: 0 auto;
+    padding: 60px 15px;
+    max-width: 1230px;
+}
+
+.register-form__heading {
+    text-align: center;
+}
+
+.register-form {
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.register-form__group {
+    margin-bottom: 15px;
+}
+
+.register-form__group label {
+    font-weight: bold;
+}
+
+.register-form__group:nth-of-type(4) {
+    margin-bottom: 65px;
+}
+
+.register-form__group button,
+.register-form__group a {
+    width: 100%;
+}
+
+.register-form__group button {
+    color: white;
+    background-color: black;
+    border: none;
+}
+
+.register-form__group a {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    text-decoration: none;
+}

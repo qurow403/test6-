@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/login.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/auth/login.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', 'ログイン画面')

@@ -1,0 +1,37 @@
+.verify-container {
+    text-align: center;
+    margin-top: 170px;
+    font-family: sans-serif;
+}
+
+.verify-message {
+    font-size: 18px;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.verify-button{
+    margin: 30px;
+    margin-top: 40px;
+}
+
+.verify-button .btn {
+    padding: 12px 24px;
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.resend-btn {
+    background: none;
+    border: none;
+    color: #1a73e8;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 14px;
+}

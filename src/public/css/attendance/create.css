@@ -1,0 +1,124 @@
+body{
+    background: #F0EFF2;
+}
+
+.container {
+    text-align: center;
+}
+
+.status-label {
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 50px;
+    background-color: #C8C8C8;
+    color: #696969;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 1;
+
+    margin-top: 135px ;
+    margin-bottom: 30px;
+}
+
+.date-label {
+    width: 332px;
+    height: 48px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 30px;
+    line-height: 100%;
+    color: #000000;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.time-label {
+    width: 242px;
+    height: 97px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 65px;
+    line-height: 100%;
+    letter-spacing: 0;
+    color: #000000;
+    text-align: center;
+    margin: 0 auto;
+
+    margin-top: 25px;
+}
+
+.btn-attendance {
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+
+    /* 「退勤」ボタンの右側に間隔をつける */
+    margin-right: 20px;
+
+    width: 221px;
+    height: 77px;
+    border-radius: 20px;
+    background-color: #000000;
+    color: #ffffff;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 77px;
+    letter-spacing: 0.15em;
+    text-align: center;
+
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-attendance:hover {
+    background-color: #333333;
+}
+
+.btn-outline-attendance {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 221px;
+    height: 77px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    color: #000000;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 100%;
+    letter-spacing: 0.15em;
+    text-align: center;
+
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-attendance:hover {
+    background-color: #000000;
+    color: #FFFFFF;
+}
+
+.finish-message {
+    width: 332px;
+    height: 31px;
+
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 100%;
+    letter-spacing: 0.15em;
+    text-align: center;
+
+    color: #000000;
+    margin: 40px auto 0;
+}

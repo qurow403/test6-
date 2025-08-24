@@ -1,0 +1,61 @@
+.login-form__content {
+    margin: 0 auto;
+    padding: 60px 15px;
+    max-width: 1230px;
+}
+
+.login-form__heading {
+    text-align: center;
+}
+
+.login-form {
+    max-width: 550px;
+    /* 入力フォームの最大幅を制限 */
+    margin: 0 auto;
+    /* 中央に配置 */
+    padding: 20px;
+}
+
+.form-control {
+    width: 100%;
+    /* 入力欄を親要素の幅いっぱいに */
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.login-form__group {
+    margin-bottom: 15px;
+}
+
+.login-form__group label {
+    display: block;
+    font-weight: bold;
+}
+
+.login-form__group input.form-control {
+    display: block;
+    font-weight: bold;
+}
+
+.login-form__group:last-of-type {
+    margin-top: 65px;
+    /* フォームとの間隔を広げる */
+}
+
+.login-form__group button,
+.login-form__group a {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.login-form__group button {
+    color: white;
+    background-color: black;
+    font-weight: bold;
+    border: none;
+}
