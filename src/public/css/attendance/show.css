@@ -1,0 +1,78 @@
+body {
+    background: #F0EFF2;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    width: 600px;
+    /* 適宜調整 */
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #F0EFF2;
+    text-align: center;
+}
+
+.title {
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    font-size: 16px;
+}
+
+.table th {
+    width: 120px;
+    font-weight: 500;
+    color: #333;
+}
+
+.table td input[type="time"],
+.table td textarea {
+    width: 120px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.table td textarea {
+    width: 65%;
+    min-height: 50px;
+    resize: none;
+}
+
+.text-center {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn-dark {
+    width: 120px;
+    height: 45px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-dark:hover {
+    background-color: #333;
+}

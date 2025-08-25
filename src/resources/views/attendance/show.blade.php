@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/show.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/attendance/show.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '勤怠詳細画面(一般ユーザー)')

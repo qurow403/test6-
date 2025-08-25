@@ -41,7 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 勤怠一覧・詳細
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/attendance/pending/{id}', [AttendanceController::class, 'pending'])->name('attendance.pending')->where('id', '[0-9]+');
+    Route::get('/attendance/{id}/pending', [AttendanceController::class, 'pending'])->name('attendance.pending')->where('id', '[0-9]+');
     Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show')->where('id', '[0-9]+');
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update')->where('id', '[0-9]+');
 

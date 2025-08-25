@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/attendance/pending.css') }}?v={{ time() }}">
+@endsection
+
 @section('title', '勤怠詳細画面_承認待ち(一般ユーザー)')
 
 @section('content')

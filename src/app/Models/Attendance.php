@@ -32,6 +32,10 @@ class Attendance extends Model
         'request_status',
     ];
 
+    protected $attributes = [
+        'request_status' => 'approved',
+    ];
+
     // userとのリレーション（多対1）
     public function user()
     {

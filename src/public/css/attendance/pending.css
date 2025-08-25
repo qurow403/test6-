@@ -1,0 +1,76 @@
+body {
+    background: #F0EFF2;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #F0EFF2;
+}
+
+/* タイトル */
+.title {
+    font-weight: 700;
+    font-size: 24px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+/* 各項目をカード風に */
+.form-group {
+    background: #fff;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 5px;
+    text-align: left;
+}
+
+/* ラベル（左側タイトル） */
+.form-group label {
+    display: inline-block;
+    width: 120px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 内容（右側テキスト） */
+.form-group p {
+    display: inline-block;
+    margin: 0;
+    font-size: 16px;
+    color: #000;
+}
+
+/* 備考やメッセージを少し調整 */
+.form-group textarea,
+.form-group .text-muted {
+    font-size: 14px;
+    color: #666;
+}
+
+/* ボタン */
+.btn {
+    display: inline-block;
+    width: 120px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+/* 黒ボタン風（修正ボタン用に合わせて） */
+.btn-secondary {
+    background-color: #000;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #333;
+}
