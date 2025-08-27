@@ -257,8 +257,8 @@ class AttendanceController extends Controller
         }
 
         return redirect()->route('attendance.pending', $id)
-            ->with('success', '修正申請を送信しました（承認待ち）')
-            ->with('submitted', $validated);
+            ->with('success', '修正申請を送信しました（承認待ち）');
+            // ->with('submitted', $validated);
     }
 
     // 勤怠詳細画面＿承認待ち(一般ユーザー)

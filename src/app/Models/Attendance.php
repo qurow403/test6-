@@ -29,6 +29,7 @@ class Attendance extends Model
         'status',
         'note',
         'worked_minutes',
+        'break_duration',
         'request_status',
     ];
 

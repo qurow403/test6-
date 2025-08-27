@@ -51,6 +51,19 @@ body {
     color: #666;
 }
 
+.action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pending-message {
+    color: red;
+    font-weight: bold;
+    margin: 0;
+}
+
 /* ボタン */
 .btn {
     display: inline-block;

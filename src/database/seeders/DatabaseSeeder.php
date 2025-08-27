@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             StaffSeeder::class,
             AttendanceSeeder::class,
             BreakSeeder::class,
+            ApprovalRequestSeeder::class,
             AttendanceCorrectionRequestSeeder::class,
         ]);
     }

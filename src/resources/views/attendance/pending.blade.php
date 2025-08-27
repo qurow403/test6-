@@ -20,7 +20,7 @@
     </div>
 
     <div class="form-group">
-        <label>日付:</label>
+        <label>日付</label>
         <p>{{ $attendance->date }}</p>
     </div>
 
@@ -32,7 +32,7 @@
     </div>
 
     <div class="form-group">
-        <label>休憩時間:</label>
+        <label>休憩時間</label>
         @forelse ($attendance->breaks as $index => $break)
             <p>
                 休憩{{ $index + 1 }}：{{ $break->break_start ?? '-' }} ～ {{ $break->break_end ?? '-' }}
@@ -43,14 +43,17 @@
     </div>
 
     <div class="form-group">
-        <label>備考:</label>
+        <label>備考</label>
         <p>{{ $attendance->note !== null && $attendance->note !== '' ? $attendance->note : 'なし' }}</p>
     </div>
 
-    <div class="form-group">
-        <p class="text-muted">{{ $attendance->message ?? '' }}</p>
-    </div>
+    <div class="action-row">
+        <a href="{{ route('attendance.index') }}" class="btn btn-secondary mt-3">一覧に戻る</a>
 
-    <a href="{{ route('attendance.index') }}" class="btn btn-secondary mt-3">一覧に戻る</a>
+        {{-- ✳︎承認待ちメッセージ --}}
+        @if ($attendance->request_status === 'pending')
+            <p class="pending-message">✳︎承認待ちのため修正できません。</p>
+        @endif
+    </div>
 </div>
 @endsection

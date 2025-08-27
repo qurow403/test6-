@@ -13,10 +13,8 @@ class ChangeClockColumnsToTimeInAttendancesTable extends Migration
      */
     public function up()
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->time('clock_in')->nullable()->change();
-            $table->time('clock_out')->nullable()->change();
-        });
+        DB::statement("ALTER TABLE attendances MODIFY clock_in TIME NULL");
+        DB::statement("ALTER TABLE attendances MODIFY clock_out TIME NULL");
     }
 
     /**
@@ -26,9 +24,7 @@ class ChangeClockColumnsToTimeInAttendancesTable extends Migration
      */
     public function down()
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->timestamp('clock_in')->nullable()->change();
-            $table->timestamp('clock_out')->nullable()->change();
-        });
+        DB::statement("ALTER TABLE attendances MODIFY clock_in TIMESTAMP NULL");
+        DB::statement("ALTER TABLE attendances MODIFY clock_out TIMESTAMP NULL");
     }
 }

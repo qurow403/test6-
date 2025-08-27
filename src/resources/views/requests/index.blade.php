@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/requests/index.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '申請一覧画面(一般ユーザー)')
