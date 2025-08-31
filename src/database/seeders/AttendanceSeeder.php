@@ -20,11 +20,27 @@ class AttendanceSeeder extends Seeder
      */
     public function run()
     {
-        // 任意の6名のユーザーを作成
-        $users = User::factory()->count(6)->create();
+        // 固定ユーザーID=1用の勤怠を作成（10日分）
+        if (User::find(1)) { // ID=1 のユーザーが存在する場合
+            for ($i = 1; $i <= 10; $i++) {
+                Attendance::firstOrCreate(
+                    [
+                        'user_id' => 1,
+                        'date' => Carbon::now()->subDays($i)->format('Y-m-d'),
+                    ],
+                    [
+                        'clock_in' => '09:00:00',
+                        'clock_out' => '18:00:00',
+                        'note' => 'テスト勤怠 #' . $i,
+                        'request_status' => 'approved',
+                    ]
+                );
+            }
+        }
 
+        // 他のユーザー用（ID=2以降）をファクトリーで1日分作成
+        $users = User::factory()->count(5)->create(); // ID=2以降
         foreach ($users as $user) {
-            // 勤怠データを1日分作成（例：2023-06-01）
             Attendance::factory()->create([
                 'user_id' => $user->id,
                 'date' => '2023-06-01',

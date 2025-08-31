@@ -1,0 +1,128 @@
+/* ページ全体 */
+body {
+    background: #F0EFF2;
+    font-family: 'Inter', sans-serif;
+}
+
+/* コンテナ */
+.container {
+    width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #F0EFF2;
+    text-align: center;
+}
+
+/* タイトル */
+h2 {
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 25px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h2::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: #000;
+    border-radius: 2px;
+}
+
+/* 成功・エラーメッセージ */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* テーブル */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    font-size: 16px;
+}
+
+.table th {
+    width: 120px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 入力欄 */
+.table td input[type="time"],
+.table td textarea {
+    width: 120px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.table td textarea {
+    width: 65%;
+    min-height: 50px;
+    resize: none;
+}
+
+.time-range {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+.time-separator {
+    font-weight: 700;
+    font-size: 16px;
+    color: #333;
+}
+
+/* ボタン */
+.text-center {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn-dark {
+    width: 120px;
+    height: 45px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-dark:hover {
+    background-color: #333;
+}

@@ -18,24 +18,21 @@ class ApprovalRequestSeeder extends Seeder
      */
     public function run()
     {
-        // ログインユーザーの ID を仮定（例えばユーザー ID 1 の場合）
-        $userId = 1;
-
-        // そのユーザーの勤怠データを取得
-        $attendances = Attendance::where('user_id', $userId)->get();
+        // ユーザーID=1の勤怠を取得
+        $attendances = Attendance::where('user_id', 1)->get();
 
         if ($attendances->isEmpty()) {
-            $this->command->info("User $userId has no attendance records. Seeder skipped.");
+            $this->command->info("User 1 has no attendance records. Seeder skipped.");
             return;
         }
 
-        // 10 件作成
+        // 10件の承認申請を作成
         for ($i = 1; $i <= 10; $i++) {
-            $attendance = $attendances->random(); // 勤怠データをランダムに選択
+            $attendance = $attendances->random();
 
             ApprovalRequest::create([
                 'attendance_id' => $attendance->id,
-                'status' => $i % 2 == 0 ? 'approved' : 'pending', // 偶数: approved, 奇数: pending
+                'status' => $i % 2 === 0 ? 'approved' : 'pending', // 偶数: approved, 奇数: pending
                 'note' => "ダミー申請理由 #$i",
             ]);
         }

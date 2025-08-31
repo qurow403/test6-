@@ -11,16 +11,18 @@
     <h1 class="title">申請一覧</h1>
 
     <!-- {{-- タブ --}} -->
-    <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-            <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
+    <div class="nav-tabs-wrapper">
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
                 href="{{ route('requests.index', ['status' => 'pending']) }}">承認待ち</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request('status') === 'approved' ? 'active' : '' }}"
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request('status') === 'approved' ? 'active' : '' }}"
                 href="{{ route('requests.index', ['status' => 'approved']) }}">承認済み</a>
-        </li>
-    </ul>
+            </li>
+        </ul>
+    </div>
 
     <!-- {{-- テーブル --}} -->
     <table class="table table-bordered bg-white rounded">
@@ -38,7 +40,7 @@
             @forelse ($requests as $request)
                 <tr>
                     <td>{{ $request->status === 'pending' ? '承認待ち' : '承認済み' }}</td>
-                    <td>{{ $request->user->name }}</td>
+                    <td>{{ $request->attendance->user->name }}</td>
                     <td>{{ \Carbon\Carbon::parse($request->attendance->date)->format('Y/m/d') }}</td>
                     <td>{{ $request->note }}</td>
                     <td>{{ \Carbon\Carbon::parse($request->created_at)->format('Y/m/d') }}</td>

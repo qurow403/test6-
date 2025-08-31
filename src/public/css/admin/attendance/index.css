@@ -1,0 +1,100 @@
+body {
+    background-color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.container h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 40px;
+    border-left: 6px solid #000;
+    padding-left: 10px;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 45px;
+    font-weight: bold;
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navigation a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navigation span {
+    flex: 1;
+    text-align: center;
+}
+
+.navigation a:hover {
+    text-decoration: underline;
+}
+
+.navigation .arrow {
+    font-weight: 900;
+    font-size: 1.2em;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.table thead {
+    background-color: #fff;
+}
+
+.table th {
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid #ddd;
+}
+
+.table td {
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #eee;
+}
+
+/* 偶数行に色付け */
+.table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.table td a {
+    color: #000;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.table td a:hover {
+    text-decoration: underline;
+}
+
+.table td[colspan="6"] {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+    font-weight: 600;
+}

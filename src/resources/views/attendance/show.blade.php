@@ -8,7 +8,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="title">勤怠詳細</h1>
+    <h2 class="title">勤怠詳細</h2>
 
     @if ($errors->any())
         <div class="alert alert-danger">

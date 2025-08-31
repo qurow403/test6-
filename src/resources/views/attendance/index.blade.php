@@ -11,10 +11,10 @@
     <h2 class="text-xl font-bold mb-4">勤怠一覧</h2>
 
     <!-- {{-- 月の移動と表示 --}} -->
-    <div class="relative flex items-center justify-center gap-x-6 mb-4">
-        <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}" class="btn btn-secondary">前月</a>
-        <h3 class="text-lg font-semibold">{{ \Carbon\Carbon::parse($currentMonth)->format('Y年n月') }}</h3>
-        <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}" class="btn btn-secondary">翌月</a>
+    <div class="relative flex items-center justify-center gap-x-6 mb-4 month-nav">
+        <a href="{{ route('attendance.index', ['month' => $prevMonth]) }}" class="btn btn-secondary">← 前月</a>
+        <h3 class="text-lg font-semibold">{{ \Carbon\Carbon::parse($currentMonth)->format('Y/m') }}</h3>
+        <a href="{{ route('attendance.index', ['month' => $nextMonth]) }}" class="btn btn-secondary">翌月 →</a>
     </div>
 
     <!-- {{-- 勤怠一覧表示 --}} -->
@@ -34,7 +34,7 @@
             <tr>
                     <!-- {{-- ★ 日付 --}} -->
                     <td class="border px-4 py-2">
-                        {{ \Carbon\Carbon::parse($attendance->date)->format('Y年n月j日（'.$weekdays[\Carbon\Carbon::parse($attendance->date)->dayOfWeek].'）') }}
+                        {{ \Carbon\Carbon::parse($attendance->date)->format('m/d').'（'.$weekdays[\Carbon\Carbon::parse($attendance->date)->dayOfWeek].'）' }}
                     </td>
 
                     <!-- {{-- ★ 出勤 --}} -->

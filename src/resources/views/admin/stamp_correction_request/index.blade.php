@@ -1,19 +1,21 @@
 @extends('layouts.admin_app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/admin/stamp_correction_request/index.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '申請一覧画面(管理者)')
 
 @section('content')
+<div class="container py-5">
     <h2>申請一覧</h2>
 
     {{-- タブ切り替え --}}
     @php
         $currentStatus = request('status', 'pending'); // デフォルトpending
     @endphp
-    <ul class="nav nav-tabs mb-3">
+    <div class="nav-tabs-wrapper">
+    <ul class="nav nav-tabs">
         <li class="nav-item">
             <a class="nav-link {{ request('status') !== 'approved' ? 'active' : '' }}"
                 href="{{ route('admin.stamp_correction_request.index', ['status' => 'pending']) }}">
@@ -27,6 +29,7 @@
             </a>
         </li>
     </ul>
+    </div>
 
     <table class="table">
         <thead>
@@ -60,4 +63,5 @@
             @endforelse
         </tbody>
     </table>
+</div>
 @endsection

@@ -1,0 +1,103 @@
+/* 全体 */
+body {
+    background: #F5F4F8;
+    /* 薄いグレー背景 */
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* コンテナ */
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* タイトル */
+h2 {
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 25px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h2::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: #000;
+    border-radius: 2px;
+}
+
+/* カード */
+.detail-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 0;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+/* テーブル */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+}
+
+.detail-table th,
+.detail-table td {
+    padding: 18px 15px;
+    border-bottom: 1px solid #ddd;
+    font-size: 15px;
+    text-align: left;
+}
+
+.detail-table th {
+    width: 140px;
+    font-weight: 500;
+    color: #333;
+    background: #fff;
+}
+
+.detail-table tr:last-child th,
+.detail-table tr:last-child td {
+    border-bottom: none;
+}
+
+.action-btn {
+    text-align: right;
+    margin-top: 45px;
+}
+
+.btn-dark {
+    width: 120px;
+    height: 42px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-dark:hover {
+    background: #333;
+}
+
+.btn-secondary {
+    width: 120px;
+    height: 42px;
+    background: #ccc;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+}

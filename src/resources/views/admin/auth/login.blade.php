@@ -1,7 +1,7 @@
 @extends('layouts.admin_app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/admin/auth/login.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', 'ログイン画面(管理者)')

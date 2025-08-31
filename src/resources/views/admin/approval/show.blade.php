@@ -1,16 +1,17 @@
 @extends('layouts.admin_app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/show.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/admin/approval/show.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '修正申請承認・詳細画面（管理者）')
 
 @section('content')
-    <h2 class="text-center mb-4">修正申請 詳細</h2>
+<div class="container py-5">
+    <h2 class="mb-4">勤怠詳細</h2>
 
-    <div class="card mx-auto p-4" style="max-width: 600px;">
-        <table class="table table-bordered">
+    <div class="card mx-auto detail-card">
+        <table class="table detail-table">
             <tr>
                 <th>名前</th>
                 <td>{{ $detail['name'] }}</td>
@@ -42,8 +43,9 @@
                 <td>{{ $detail['note'] ?? 'ー' }}</td>
             </tr>
         </table>
+    </div>
 
-        <div class="text-center mt-4">
+        <div class="action-btn">
             @if($detail['status'] === 'pending')
                 <form action="{{ route('admin.approval.approve', $detail['id']) }}" method="POST">
                     @csrf
@@ -54,4 +56,5 @@
             @endif
         </div>
     </div>
+</div>
 @endsection

@@ -1,7 +1,7 @@
 @extends('layouts.admin_app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/admin/staff_attendance/index.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', 'スタッフ別勤怠一覧画面(管理者)')
@@ -10,12 +10,16 @@
 <div class="container py-4">
     <h3 class="mb-4">{{ $user->name }}さんの勤怠</h3>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('admin.staff_attendance.index', ['id' => $user->id, 'month' => $date->copy()->subMonth()->format('Y-m')]) }}">← 前月</a>
-        <div>
+    <div class="month-nav d-flex align-items-center mb-3">
+        <div class="prev">
+            <a href="{{ route('admin.staff_attendance.index', ['id' => $user->id, 'month' => $date->copy()->subMonth()->format('Y-m')]) }}">← 前月</a>
+        </div>
+        <div class="current">
             <strong>{{ $date->format('Y') }}/{{ $date->format('m') }}</strong>
         </div>
-        <a href="{{ route('admin.staff_attendance.index', ['id' => $user->id, 'month' => $date->copy()->addMonth()->format('Y-m')]) }}">翌月 →</a>
+        <div class="next">
+            <a href="{{ route('admin.staff_attendance.index', ['id' => $user->id, 'month' => $date->copy()->addMonth()->format('Y-m')]) }}">翌月 →</a>
+        </div>
     </div>
 
     <table class="table table-striped text-center">

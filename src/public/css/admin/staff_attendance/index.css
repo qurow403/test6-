@@ -1,0 +1,129 @@
+/* ページ全体 */
+body {
+    background: #F0EFF2;
+    font-family: 'Inter', sans-serif;
+}
+
+/* コンテナ */
+.container {
+    width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    background: #F0EFF2;
+    text-align: center;
+}
+
+/* タイトル */
+h3 {
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+/* 月移動リンク */
+.month-nav {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    /* 左・中央・右に配置 */
+    align-items: center;
+    position: relative;
+}
+
+/* 左端 */
+.month-nav .prev {
+    text-align: left;
+}
+
+/* 右端 */
+.month-nav .next {
+    text-align: right;
+}
+
+.month-nav .current {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.month-nav a {
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.month-nav a:hover {
+    text-decoration: underline;
+}
+
+/* テーブル */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 15px;
+    text-align: center;
+}
+
+.table th {
+    font-weight: 600;
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* ストライプ (偶数行に薄い背景) */
+.table tbody tr {
+    background: #fafafa;
+}
+
+/* 詳細リンク */
+.table td a {
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.table td a:hover {
+    text-decoration: underline;
+}
+
+.text-end {
+    text-align: right;
+    margin-top: 30px;
+    margin-right: 0;
+}
+
+/* ボタン */
+.btn-dark {
+    width: 150px;
+    height: 45px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    line-height: 45px;
+}
+
+.btn-dark:hover {
+    background-color: #333;
+}

@@ -1,7 +1,7 @@
 @extends('layouts.admin_app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('css/admin/attendance/show.css') }}?v={{ time() }}">
 @endsection
 
 @section('title', '勤怠詳細画面(管理者)')
@@ -45,20 +45,18 @@
             </tr>
             <tr>
                 <th>出勤・退勤</th>
-                <td>
+                <td colspan="2" class="time-range">
                     <input type="time" name="clock_in" value="{{ \Carbon\Carbon::parse($attendance->clock_in)->format('H:i') }}">
-                </td>
-                <td>
+                    <span class="time-separator">〜</span>
                     <input type="time" name="clock_out" value="{{ \Carbon\Carbon::parse($attendance->clock_out)->format('H:i') }}">
                 </td>
             </tr>
             @foreach ($attendance->breaks as $index => $break)
             <tr>
                 <th>休憩{{ $index + 1 }}</th>
-                <td>
+                <td colspan="2" class="time-range">
                     <input type="time" name="breaks[{{ $index }}][start]" value="{{ \Carbon\Carbon::parse($break->break_start)->format('H:i') }}">
-                </td>
-                <td>
+                    <span class="time-separator">〜</span>
                     <input type="time" name="breaks[{{ $index }}][end]" value="{{ \Carbon\Carbon::parse($break->break_end)->format('H:i') }}">
                 </td>
             </tr>
@@ -66,14 +64,17 @@
             <!-- {{-- 空の休憩欄を1行追加 --}} -->
             <tr>
                 <th>休憩{{ count($attendance->breaks) + 1 }}</th>
-                <td><input type="time" name="breaks[{{ count($attendance->breaks) }}][start]"></td>
-                <td><input type="time" name="breaks[{{ count($attendance->breaks) }}][end]"></td>
+                <td colspan="2" class="time-range">
+                    <input type="time" name="breaks[{{ count($attendance->breaks) }}][start]">
+                    <span class="time-separator">〜</span>
+                    <input type="time" name="breaks[{{ count($attendance->breaks) }}][end]">
+                </td>
             </tr>
 
             <tr>
                 <th>備考</th>
                 <td colspan="2">
-                    <textarea name="note" rows="2" style="width: 100%;">{{ $attendance->note }}</textarea>
+                    <textarea name="note" rows="2" style="width: 65.5%;">{{ $attendance->note }}</textarea>
                 </td>
             </tr>
         </table>

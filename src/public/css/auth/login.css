@@ -28,6 +28,10 @@
     margin-bottom: 15px;
 }
 
+.login-form__group:nth-of-type(1) {
+    margin-bottom: 45px;
+}
+
 .login-form__group label {
     display: block;
     font-weight: bold;
@@ -39,8 +43,7 @@
 }
 
 .login-form__group:last-of-type {
-    margin-top: 65px;
-    /* フォームとの間隔を広げる */
+    margin-top: 75px;
 }
 
 .login-form__group button,
