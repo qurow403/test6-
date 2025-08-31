@@ -10,7 +10,6 @@
 <div class="container">
     <h1 class="title">申請一覧</h1>
 
-    <!-- {{-- タブ --}} -->
     <div class="nav-tabs-wrapper">
         <ul class="nav nav-tabs mb-3">
             <li class="nav-item">
@@ -24,7 +23,6 @@
         </ul>
     </div>
 
-    <!-- {{-- テーブル --}} -->
     <table class="table table-bordered bg-white rounded">
         <thead>
             <tr>
@@ -45,7 +43,7 @@
                     <td>{{ $request->note }}</td>
                     <td>{{ \Carbon\Carbon::parse($request->created_at)->format('Y/m/d') }}</td>
                     <td>
-                        <a href="{{ route('attendance.pending', ['id' => $request->id]) }}">詳細</a>
+                        <a href="{{ route('attendance.pending', ['id' => $request->attendance->id]) }}">詳細</a>
                     </td>
                 </tr>
             @empty

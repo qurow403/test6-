@@ -264,13 +264,17 @@ class AttendanceController extends Controller
     // 勤怠詳細画面＿承認待ち(一般ユーザー)
     public function pending($id)
     {
-        // 自分の勤怠で、ステータスが承認待ちのものを取得
         $attendance = Attendance::with(['breaks', 'user'])
             ->where('id', $id)
             ->where('user_id', Auth::id())
-            ->where('request_status', Attendance::STATUS_PENDING)
+            ->where('request_status', 'pending')
             ->firstOrFail();
 
-        return view('attendance.pending', compact('attendance', 'id'));
+        if (!$attendance) {
+            return redirect()->route('requests.index')
+                ->with('error', '該当する勤怠が見つかりません。');
+        }
+
+        return view('attendance.pending', compact('attendance'));
     }
 }

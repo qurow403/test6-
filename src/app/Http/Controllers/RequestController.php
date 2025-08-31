@@ -19,17 +19,8 @@ class RequestController extends Controller
     {
         $status = $request->query('status', 'pending'); // デフォルト: pending
 
-        // attendances 経由で user_id を指定
-        // $requests = ApprovalRequest::whereHas('attendance', function ($query) {
-        //         $query->where('user_id', Auth::id());
-        //     })
-        //     ->where('status', $status)
-        //     ->with('attendance') // attendancesも一緒に取得
-        //     ->orderByDesc('created_at')
-        //     ->get();
-
         $requests = ApprovalRequest::whereHas('attendance', function ($query) {
-            $query->where('user_id', 1); // ←固定ID
+            $query->where('user_id', 1);
         })
         ->where('status', $status)
         ->with('attendance')
